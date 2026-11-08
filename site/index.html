@@ -1723,7 +1723,7 @@ html.mm-open .fab-wa,html.mm-open .fab-story,html.mm-open .app-toast{display:non
     </div></section>
     <section class="hsec hdar" id="aajDarshan"><div class="hin">
       <div class="dar-grid">
-        <div class="dar-frame"><div class="dar-glow" aria-hidden="true"></div><img id="darImg" src="img/maha-arti.jpg" alt=""><span class="dar-date" id="darDate"></span></div>
+        <div class="dar-frame"><div class="dar-glow" aria-hidden="true"></div><img id="darImg" src="img/darshan-mamadev.jpg" alt=""><span class="dar-date" id="darDate"></span></div>
         <div class="dar-text"><span class="pan-eye"><span data-t="ad1">Today's darshan</span></span><h1 id="darTitle"><span data-t="ad2">Darshan of Shri Mamadev</span></h1><p id="darCap"><span data-t="ad3">Bow your head wherever you are. The day's shringar photo from the ashram appears here every morning.</span></p>
           <div class="hh-cta"><button type="button" class="pill gold" data-story="darshan">📲 <span data-t="ad4">Share today's darshan</span></button><a class="pill line" href="#calendar">📅 <span data-t="ad5">Panchang calendar</span></a></div></div>
       </div>
@@ -1774,7 +1774,7 @@ html.mm-open .fab-wa,html.mm-open .fab-story,html.mm-open .app-toast{display:non
     <section class="hsec hmandir"><div class="hin">
       <h1 class="hcenter"><span data-t="m1">At the mandir</span></h1>
       <div class="mgrid">
-        <figure class="mcard"><div class="mimg"><img src="img/maha-arti.jpg" alt="" width="597" height="735"><div class="mflick"></div></div><figcaption><b><span data-t="m2">Maha aarti</span></b><p><span data-t="m4">The evening maha aarti fills the mandir with lamps, bells and the name of Mamadev.</span></p></figcaption></figure>
+        <figure class="mcard"><div class="mimg"><img src="img/maha-aarti-2.jpg" alt="" width="960" height="1280" style="object-position:68% 50%"><div class="mflick"></div></div><figcaption><b><span data-t="m2">Maha aarti</span></b><p><span data-t="m4">The evening maha aarti fills the mandir with lamps, bells and the name of Mamadev.</span></p></figcaption></figure>
         <figure class="mcard"><div class="mimg"><img src="img/prasad.jpg" alt="" width="633" height="735"><div class="msteam"><i></i><i></i><i></i></div></div><figcaption><b><span data-t="m3">Prasad</span></b><p><span data-t="m5">Prasad is served to every devotee who comes for darshan.</span></p></figcaption></figure>
       </div>
     </div></section>
@@ -4182,8 +4182,8 @@ function plClose(){const x=PL.x;if(x&&x.v!=="mala"&&PL.el>=60&&PL.run!==null&&do
 function darOne(){const d=Object.assign({},SITE.darshan||{});if(!d.img&&Array.isArray(d.frames)){const f=d.frames.find(x=>x&&x.img);if(f){d.img=f.img;d.cap=d.cap||f.cap;}}return d;}
 function renderDarshan(){const img=document.getElementById("darImg");if(!img)return;const d=darOne();
   const today=dyToday();const has=d.img&&d.date===today;
-  img.src=d.img?blobU(d.img):"img/maha-arti.jpg";
-  document.getElementById("darDate").textContent=d.img?(has?L("Today","आज","આજે")+" · ":"")+new Date((d.date||today)+"T00:00").toLocaleDateString(LOC(),{day:"numeric",month:"long"}).replace(/\d/g,x=>num(x)):L("Maha aarti","महा आरती","મહા આરતી");
+  img.src=d.img?blobU(d.img):"img/darshan-mamadev.jpg";img.style.objectPosition=d.img?"":"50% 30%";
+  document.getElementById("darDate").textContent=d.img?(has?L("Today","आज","આજે")+" · ":"")+new Date((d.date||today)+"T00:00").toLocaleDateString(LOC(),{day:"numeric",month:"long"}).replace(/\d/g,x=>num(x)):L("Shri Mamadev darshan","श्री मामादेव दर्शन","શ્રી મામાદેવ દર્શન");
   if(d.cap)document.getElementById("darCap").textContent=d.cap;
   document.getElementById("darTitle").textContent=d.title||L("Darshan of Shri Mamadev","श्री मामादेव के दर्शन","શ્રી મામાદેવનાં દર્શન");img.alt=d.title||"";}
 renderDarshan();langHooks.push(renderDarshan);siteHooks.push(renderDarshan);
@@ -4344,7 +4344,7 @@ async function makeStory(kind){try{await document.fonts.ready;}catch(e){}
     const art=await stArt(artSVG(p0.art));const hl=c.createRadialGradient(W/2,880,0,W/2,880,420);hl.addColorStop(0,"rgba(255,200,120,.4)");hl.addColorStop(1,"rgba(255,170,80,0)");c.fillStyle=hl;c.fillRect(0,440,W,900);if(art)c.drawImage(art,W/2-330,540,660,660);
     let y=title(L(...p0.n),1310,90);y=sub(k==="prod"&&p0.place?L("Abhishek at the tirth you choose","आपके चुने तीर्थ पर अभिषेक"):L(...p0.sub),y+4,"#fdee6a");
     sub(L("Delivered to your home anywhere in India","पूरे भारत में आपके घर तक"),y+10,"#ffe2a0",36);name="divya-bhandar";}
-  else if(k==="darshan"){stBg(c,W,H,"#1c0b1a","#3a1406","#7a2a10");await stFrame(c,W,H,"");const d=darOne();const img=await stLoad(d.img?blobU(d.img):"img/maha-arti.jpg");
+  else if(k==="darshan"){stBg(c,W,H,"#1c0b1a","#3a1406","#7a2a10");await stFrame(c,W,H,"");const d=darOne();const img=await stLoad(d.img?blobU(d.img):"img/darshan-mamadev.jpg");
     const aw=740,ah=870,ax=(W-aw)/2,ay=470;c.save();c.beginPath();c.moveTo(ax,ay+ah);c.lineTo(ax,ay+aw/2);c.arc(W/2,ay+aw/2,aw/2,Math.PI,0);c.lineTo(ax+aw,ay+ah);c.closePath();c.clip();if(img){const sc=Math.max(aw/img.width,ah/img.height);c.drawImage(img,W/2-img.width*sc/2,ay+ah/2-img.height*sc/2,img.width*sc,img.height*sc);}c.restore();
     c.strokeStyle="#e8b24a";c.lineWidth=12;c.beginPath();c.moveTo(ax,ay+ah);c.lineTo(ax,ay+aw/2);c.arc(W/2,ay+aw/2,aw/2,Math.PI,0);c.lineTo(ax+aw,ay+ah);c.stroke();
     title(d.title||L("Today's darshan","आज के दर्शन","આજનાં દર્શન"),ay+ah+100,d.title&&d.title.length>22?64:80);c.fillStyle="#ffe2a0";c.font=stFont(600,40);c.fillText(new Date().toLocaleDateString(LOC(),{weekday:"long",day:"numeric",month:"long"}).replace(/\d/g,x=>num(x)),W/2,ay+ah+158);if(d.cap){c.fillStyle="rgba(255,240,210,.85)";c.font=stFont(600,32);c.fillText(d.cap,W/2,ay+ah+206);}name="aaj-na-darshan";}
