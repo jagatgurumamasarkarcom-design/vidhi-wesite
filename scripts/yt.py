@@ -95,6 +95,17 @@ def player(vid, kc):
     j = json.loads(yget("https://www.youtube.com/youtubei/v1/player?key=" + kc[0], {"context": kc[1], "videoId": vid}))
     vd = j.get("videoDetails") or {}; mf = (j.get("microformat") or {}).get("playerMicroformatRenderer") or {}
     return vd, mf
+# dates of the older videos, read once from YouTube (YouTube does not give them to build servers)
+SEED = {}
+try:
+    for line in open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "yt-seed.txt"), encoding="utf-8"):
+        p = line.split()
+        if len(p) >= 3 and len(p[1]) == 12:
+            t = p[1]
+            SEED[p[0]] = {"at": "%s-%s-%sT%s:%s:00+00:00" % (t[:4], t[4:6], t[6:8], t[8:10], t[10:12]), "ch": int(p[2][0]), "s": "s" in p[2], "live": "l" in p[2], "sec": int(p[3]) if len(p) > 3 and p[3].isdigit() else 0}
+except Exception as e:
+    print("no seed:", e)
+print("seed dates:", len(SEED))
 added = 0
 for ci, c in enumerate(CHANNELS):
     for tab in ("videos", "shorts", "streams"):
@@ -109,6 +120,7 @@ for ci, c in enumerate(CHANNELS):
             rec = {"id": vid, "t": it["t"], "ch": ci, "at": "", "s": it["s"] or tab == "shorts", "v": 0, "d": ""}
             if tab == "streams": rec["live"] = 1
             try:
+                if vid in SEED: raise RuntimeError("seed")
                 vd, mf = player(vid, kc)
                 rec["t"] = vd.get("title") or rec["t"]; rec["v"] = int(vd.get("viewCount") or 0)
                 rec["d"] = (vd.get("shortDescription") or "")[:600]; rec["sec"] = int(vd.get("lengthSeconds") or 0)
@@ -117,7 +129,10 @@ for ci, c in enumerate(CHANNELS):
                     from datetime import datetime, timezone
                     rec["at"] = datetime.fromisoformat(pub).astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+00:00")
             except Exception as e:
-                print("player failed", vid, e)
+                if str(e) != "seed": print("player failed", vid, e)
+            if not rec["at"] and vid in SEED:
+                sd = SEED[vid]; rec["at"] = sd["at"]; rec["sec"] = rec.get("sec") or sd["sec"]
+                if sd["live"]: rec["live"] = 1
             if rec["at"]:
                 vids[vid] = rec; added += 1
 print("added from channel pages:", added)
