@@ -1570,6 +1570,8 @@ main{padding-bottom:0}
 .nav-login svg{width:20px;height:20px}
 .nav-login .av{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(#fdee6a,#e8b24a);color:#5a1a08;font-size:14px;font-weight:800}
 .nav-login~.lang{margin-left:12px!important}
+.lang.lg-lang{display:flex;justify-content:center;width:max-content;max-width:100%;margin:0 auto 10px!important;flex-wrap:wrap}
+.lang.lg-lang button{font-size:15px;padding:8px 14px}
 .lg-box{gap:10px}
 .lg-om{width:70px;height:70px;border-radius:50%;display:grid;place-items:center;font-family:"Tiro Devanagari Hindi",serif;font-size:40px;color:#5a1a08;background:radial-gradient(circle at 35% 30%,#fff3c4,#ffd27a 55%,#c08a2a);box-shadow:0 0 30px rgba(255,200,110,.5)}
 .lg-sub{font-size:15px;line-height:1.6;opacity:.9}
@@ -1715,11 +1717,11 @@ html.mm-open .fab-wa,html.mm-open .fab-story,html.mm-open .app-toast{display:non
   <div class="dyp-ctl"><button type="button" id="dypPlay"></button><button type="button" id="dypSound" aria-pressed="true"></button><button type="button" id="dypVoice" aria-pressed="false"></button></div>
 </div>
 <div class="st-modal" id="lgModal" hidden role="dialog" aria-modal="true" aria-labelledby="lgTitle"><div class="st-box lg-box"><button type="button" class="st-x" id="lgClose" aria-label="Close">×</button>
-  <div class="lg-om" aria-hidden="true">ॐ</div><b id="lgTitle"><span data-t="lg1">Jai Shri Mamadev 🙏</span></b><p class="lg-gate" hidden><span data-t="lg9">Please log in once to enter the website.</span></p><p class="lg-sub"><span data-t="lg2">Log in to keep your bookings, member card and sadhana in one place.</span></p>
+  <div class="lang lg-lang" role="group" aria-label="Language"><button type="button" data-lang="gu">ગુજરાતી</button><button type="button" data-lang="hi">हिंदी</button><button type="button" data-lang="en">English</button></div><div class="lg-om" aria-hidden="true">ॐ</div><b id="lgTitle"><span data-t="lg1">Jai Shri Mamadev 🙏</span></b><p class="lg-gate" hidden><span data-t="lg9">Please log in once to enter the website.</span></p><p class="lg-sub"><span data-t="lg2">Log in to keep your bookings, member card and sadhana in one place.</span></p>
   <form class="dk-f lg-form" id="lgForm" novalidate>
     <label for="lgName"><span data-t="lg3">Your name</span><input id="lgName" autocomplete="name"></label>
     <label for="lgPhone"><span data-t="lg4">WhatsApp number</span><input id="lgPhone" inputmode="tel" autocomplete="tel" placeholder="98765 43210"></label>
-    <div class="dk-r3 sp-r2"><label for="lgCity"><span data-t="lg5">City</span><input id="lgCity" autocomplete="address-level2"></label><label for="lgGotra"><span data-t="lg6">Gotra (optional)</span><input id="lgGotra"></label></div>
+    <label for="lgCity"><span data-t="lg5">City</span><input id="lgCity" autocomplete="address-level2"></label>
     <p class="dk-err" id="lgErr" aria-live="polite"></p>
     <button type="submit" class="pill gold dk-send"><span data-t="lg7">Login</span></button>
     <p class="lg-note"><span data-t="lg8">Your name and number are kept with Shree Mamadev Trust so the trust can reach you, and your booking forms fill in by themselves.</span></p>
@@ -3828,8 +3830,8 @@ function renderAdmin(){const A=document.getElementById("adm");if(!A)return;
     const today=all.filter(x=>x.last&&Date.now()-x.last<86400000).length;
     body=`<div class="adm-stats"><div><b>${num(all.length)}</b><span>${L("People logged in","लॉगिन किए लोग","લૉગિન કરેલા લોકો")}</span></div><div><b>${num(today)}</b><span>${L("Visited in the last 24 h","पिछले 24 घंटे में आए","છેલ્લા 24 કલાકમાં આવ્યા")}</span></div></div>
       <div class="adm-bar"><input id="memQ" placeholder="${L("Search name, number, city…","नाम, नंबर, शहर खोजें…","નામ, નંબર, શહેર શોધો…")}" value="${esc(ADM.mq||"")}" style="flex:1;min-width:200px"><button type="button" class="btn ghost" id="memCsv">${L("Download Excel (CSV)","Excel (CSV) डाउनलोड")}</button></div>
-      ${rows.length?`<div class="mem-wrap"><table class="mem-tbl"><thead><tr><th>${L("Name","नाम","નામ")}</th><th>WhatsApp</th><th>${L("City","शहर","શહેર")}</th><th>${L("Gotra","गोत्र","ગોત્ર")}</th><th>${L("First login","पहला लॉगिन","પહેલું લૉગિન")}</th><th>${L("Last visit","आखिरी बार","છેલ્લી વાર")}</th><th>${L("Visits","बार","વાર")}</th></tr></thead><tbody>
-      ${rows.map(x=>`<tr><td><b>${esc(x.name||"—")}</b></td><td><a href="https://wa.me/91${esc(String(x.phone||"").slice(-10))}" target="_blank" rel="noopener">${esc(x.phone||"")} ↗</a></td><td>${esc(x.city||"—")}</td><td>${esc(x.gotra||"—")}</td><td>${day(x.first)}</td><td>${day(x.last)}</td><td>${num(x.visits||1)}</td></tr>`).join("")}</tbody></table></div>`:`<div class="adm-empty">${L("No one has logged in yet.","अभी तक किसी ने लॉगिन नहीं किया।","હજી સુધી કોઈએ લૉગિન નથી કર્યું.")}</div>`}`;}
+      ${rows.length?`<div class="mem-wrap"><table class="mem-tbl"><thead><tr><th>${L("Name","नाम","નામ")}</th><th>WhatsApp</th><th>${L("City","शहर","શહેર")}</th><th>${L("First login","पहला लॉगिन","પહેલું લૉગિન")}</th><th>${L("Last visit","आखिरी बार","છેલ્લી વાર")}</th><th>${L("Visits","बार","વાર")}</th></tr></thead><tbody>
+      ${rows.map(x=>`<tr><td><b>${esc(x.name||"—")}</b></td><td><a href="https://wa.me/91${esc(String(x.phone||"").slice(-10))}" target="_blank" rel="noopener">${esc(x.phone||"")} ↗</a></td><td>${esc(x.city||"—")}</td><td>${day(x.first)}</td><td>${day(x.last)}</td><td>${num(x.visits||1)}</td></tr>`).join("")}</tbody></table></div>`:`<div class="adm-empty">${L("No one has logged in yet.","अभी तक किसी ने लॉगिन नहीं किया।","હજી સુધી કોઈએ લૉગિન નથી કર્યું.")}</div>`}`;}
   else if(ADM.tab==="mantra"){const it=mnItems();body=`<div class="adm-card"><p>${L("These play on the Dukh Nivaran page under “First, calm the mind”. Add an audio file, an MP3 link or a YouTube link to each. Only the admin can change them.","ये दुःख निवारण पेज पर “पहले मन शांत करें” में बजते हैं। हर मंत्र में ऑडियो फ़ाइल, MP3 लिंक या YouTube लिंक जोड़ें। सिर्फ़ एडमिन बदल सकता है।","આ દુઃખ નિવારણ પેજ પર “પહેલાં મન શાંત કરો”માં વાગે છે. દરેક મંત્રમાં ઑડિયો ફાઇલ, MP3 લિંક કે YouTube લિંક ઉમેરો. ફક્ત એડમિન બદલી શકે છે.")}</p></div>
       ${it.map((x,i)=>`<div class="adm-card" data-mi="${i}"><div class="adm-g2"><label>${L("Name","नाम","નામ")}<input data-mf="n" value="${esc(mnName(x))}"></label><label>${L("One line about it","एक पंक्ति","એક લીટી")}<input data-mf="d" value="${esc(mnDesc(x))}"></label></div>
         <label>${L("Mantra text (shown while it plays)","मंत्र (बजते समय दिखेगा)","મંત્ર (વાગતી વખતે દેખાશે)")}<textarea data-mf="txt" rows="2">${esc(x.txt||"")}</textarea></label>
@@ -3906,7 +3908,7 @@ function renderAdmin(){const A=document.getElementById("adm");if(!A)return;
       let img="";const f=document.getElementById("yuImg").files[0];if(f&&ADM.assets){admSay(L("Uploading photo…","फ़ोटो अपलोड हो रही है…"));try{img=(await ADM.assets.upload(await shrink(f))).id;}catch(err){}}
       const ups=[...(((SITE.yatra||{}).updates)||[]),{at:Date.now(),date:v("yuDate"),place:v("yuPlace"),text:v("yuText"),img}];await siteSet("yatra",{updates:ups},L("Update posted on the Yatra page.","यात्रा पेज पर अपडेट डल गया।"));return;}
     if(t.dataset.yudel!==undefined){const ups=(((SITE.yatra||{}).updates)||[]).filter(u=>String(u.at)!==t.dataset.yudel);await siteSet("yatra",{updates:ups},L("Update deleted.","अपडेट हटा दिया।"));return;}
-    if(t.id==="memCsv"&&ADM.dl){const cols=["name","phone","city","gotra","first","last","visits"];const q=x=>'"'+String(x==null?"":x).replace(/"/g,'""')+'"';
+    if(t.id==="memCsv"&&ADM.dl){const cols=["name","phone","city","first","last","visits"];const q=x=>'"'+String(x==null?"":x).replace(/"/g,'""')+'"';
       const csv="﻿"+cols.join(",")+"\n"+(ADM.mem||[]).map(x=>cols.map(c=>(c==="first"||c==="last")?q(x[c]?new Date(x[c]).toISOString().slice(0,16).replace("T"," "):""):q(x[c])).join(",")).join("\n");
       try{await ADM.dl.save({filename:"members-"+new Date().toISOString().slice(0,10)+".csv",data:csv});}catch(err){}return;}
     if(t.id==="mnAdd"||t.id==="mnSave"||t.dataset.mdel!==undefined){
@@ -4376,7 +4378,7 @@ async function memSave(u,isNew){try{if(!u||!u.phone)return;const now=Date.now();
   const ref=db.doc("members/"+uid);let old={};try{const g=await ref.get();if(g.exists)old=g.data()||{};}catch(e){}
   await ref.set({...doc,first:old.first||now,visits:(old.visits||0)+1});}catch(e){console.log("[members]",e);}}
 function acGate(){if(ACC.get())return;const h=location.hash.slice(1);if(h==="admin")return;const m=document.getElementById("lgModal");m.dataset.gate="1";acOpen();}
-function acOpen(edit){const m=document.getElementById("lgModal"),u=ACC.get()||{};const gate=m.dataset.gate==="1"&&!ACC.get();document.getElementById("lgClose").hidden=gate;m.querySelector(".lg-gate").hidden=!gate;m.classList.toggle("gate",gate);["Name","Phone","City","Gotra"].forEach(k=>{document.getElementById("lg"+k).value=u[AC_FILL[k]]||"";});document.getElementById("lgErr").textContent="";m.hidden=false;setTimeout(()=>document.getElementById("lgName").focus(),60);}
+function acOpen(edit){const m=document.getElementById("lgModal"),u=ACC.get()||{};const gate=m.dataset.gate==="1"&&!ACC.get();document.getElementById("lgClose").hidden=gate;m.querySelector(".lg-gate").hidden=!gate;m.classList.toggle("gate",gate);["Name","Phone","City"].forEach(k=>{document.getElementById("lg"+k).value=u[AC_FILL[k]]||"";});document.getElementById("lgErr").textContent="";m.hidden=false;setTimeout(()=>document.getElementById("lgName").focus(),60);}
 function renderAccount(){const V=document.getElementById("view-account");if(!V)return;const u=ACC.get();
   const head=document.getElementById("acHead"),grid=document.getElementById("acGrid"),list=document.getElementById("acList");
   V.querySelectorAll(".ac-sec,.ac-foot").forEach(e=>e.hidden=!u);
@@ -4396,7 +4398,7 @@ function renderAccount(){const V=document.getElementById("view-account");if(!V)r
   document.getElementById("lgForm").addEventListener("submit",e=>{e.preventDefault();const v=id=>document.getElementById(id).value.trim();const ph=asc(v("lgPhone")).replace(/\D/g,"").slice(-10);
     if(!v("lgName")){document.getElementById("lgErr").textContent=L("Please write your name.","कृपया अपना नाम लिखें।","કૃપા કરીને તમારું નામ લખો.");return;}
     if(ph.length!==10){document.getElementById("lgErr").textContent=L("Please write a 10-digit WhatsApp number.","कृपया १० अंकों का WhatsApp नंबर लिखें।","કૃપા કરીને ૧૦ અંકનો WhatsApp નંબર લખો.");return;}
-    const old=ACC.get()||{};const wasGate=m.dataset.gate==="1";const nu={...old,name:v("lgName"),phone:ph,city:v("lgCity"),gotra:v("lgGotra"),since:old.since||Date.now()};ACC.set(nu);m.dataset.gate="";close();acNav();renderAccount();acFill();
+    const old=ACC.get()||{};const wasGate=m.dataset.gate==="1";const nu={...old,name:v("lgName"),phone:ph,city:v("lgCity"),since:old.since||Date.now()};ACC.set(nu);m.dataset.gate="";close();acNav();renderAccount();acFill();
     memSave(nu,!old.phone||old.phone!==ph);try{sessionStorage.setItem("jg-seen","1");}catch(_){}
     if(!wasGate&&location.hash.slice(1)!=="account")location.hash="account";});
   // ask for login before the site is used; count one visit per browser session for people already logged in
