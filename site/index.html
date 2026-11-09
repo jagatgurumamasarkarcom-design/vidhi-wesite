@@ -4384,6 +4384,7 @@ async function memSave(u,isNew){try{if(!u||!u.phone)return;const now=Date.now();
   if(!(window.claude&&claude.use))return;const db=await claude.use("db"),user=await claude.use("user");const uid=user&&await user.id();if(!db||!uid)return;
   const ref=db.doc("members/"+uid);let old={};try{const g=await ref.get();if(g.exists)old=g.data()||{};}catch(e){}
   await ref.set({...doc,first:old.first||now,visits:(old.visits||0)+1});}catch(e){console.log("[members]",e);}}
+addEventListener("hashchange",()=>{const m=document.getElementById("lgModal");if(!m||ACC.get())return;if(location.hash==="#admin"){if(m.dataset.gate==="1"){m.dataset.gate="";m.hidden=true;}}});
 function acGate(){if(ACC.get())return;if(/bot|crawl|spider|slurp|facebookexternalhit|lighthouse/i.test(navigator.userAgent))return;const h=location.hash.slice(1);if(h==="admin")return;const m=document.getElementById("lgModal");m.dataset.gate="1";acOpen();}
 function acOpen(edit){const m=document.getElementById("lgModal"),u=ACC.get()||{};const gate=m.dataset.gate==="1"&&!ACC.get();document.getElementById("lgClose").hidden=gate;m.querySelector(".lg-gate").hidden=!gate;m.classList.toggle("gate",gate);["Name","Phone","City"].forEach(k=>{document.getElementById("lg"+k).value=u[AC_FILL[k]]||"";});document.getElementById("lgErr").textContent="";m.hidden=false;setTimeout(()=>document.getElementById("lgName").focus(),60);}
 function renderAccount(){const V=document.getElementById("view-account");if(!V)return;const u=ACC.get();
