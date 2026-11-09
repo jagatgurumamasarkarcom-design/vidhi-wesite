@@ -4,8 +4,15 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="description" content="जगतगुरु स्वामी वीरभद्रानंदगिरिजी महाराज (मामा सरकार) · श्री मामादेव तपोभूमि तीर्थधाम · दर्शन, सेवा, दान और कार्यक्रम">
-<meta property="og:title" content="Jagatguru Mama Sarkar">
-<meta property="og:image" content="img/ab/guru-throne.jpg">
+<meta property="og:title" content="JagatGuru MamaSarkar | Shree Mamadev Tapobhumi Tirthdham">
+<meta property="og:description" content="जगतगुरु स्वामी वीरभद्रानंदगिरिजी महाराज (मामा सरकार) · श्री मामादेव तपोभूमि तीर्थधाम, भायला · दर्शन, सेवा, दान और कार्यक्रम">
+<meta property="og:url" content="https://jagatgurumamasarkar.in/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="JagatGuru MamaSarkar">
+<link rel="canonical" href="https://jagatgurumamasarkar.in/">
+<meta name="robots" content="index,follow">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"Shree Mamadev Education and Charitable Trust","alternateName":["JagatGuru MamaSarkar","Shree Mamadev Tapobhumi Tirthdham"],"url":"https://jagatgurumamasarkar.in/","logo":"https://jagatgurumamasarkar.in/icons/icon-512.png","sameAs":["https://www.instagram.com/sanatani_jagatguru_mamasarkar/","https://www.facebook.com/share/19yaN6uA3X/"]}</script>
+<meta property="og:image" content="https://jagatgurumamasarkar.in/img/ab/guru-throne.jpg">
 <link rel="icon" href="img/logo.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#2a0806">
@@ -13,7 +20,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Jagatguru">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Jagatguru Mama Sarkar</title>
+<title>JagatGuru MamaSarkar | Shree Mamadev Tapobhumi Tirthdham, Bhayla</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Hanuman:wght@700&family=Tiro+Devanagari+Hindi&family=Mukta:wght@400;600;700&family=Mukta+Vaani:wght@400;600;700&family=Noto+Serif+Gujarati:wght@600;700&display=swap">
 <style>
@@ -4377,7 +4384,7 @@ async function memSave(u,isNew){try{if(!u||!u.phone)return;const now=Date.now();
   if(!(window.claude&&claude.use))return;const db=await claude.use("db"),user=await claude.use("user");const uid=user&&await user.id();if(!db||!uid)return;
   const ref=db.doc("members/"+uid);let old={};try{const g=await ref.get();if(g.exists)old=g.data()||{};}catch(e){}
   await ref.set({...doc,first:old.first||now,visits:(old.visits||0)+1});}catch(e){console.log("[members]",e);}}
-function acGate(){if(ACC.get())return;const h=location.hash.slice(1);if(h==="admin")return;const m=document.getElementById("lgModal");m.dataset.gate="1";acOpen();}
+function acGate(){if(ACC.get())return;if(/bot|crawl|spider|slurp|facebookexternalhit|lighthouse/i.test(navigator.userAgent))return;const h=location.hash.slice(1);if(h==="admin")return;const m=document.getElementById("lgModal");m.dataset.gate="1";acOpen();}
 function acOpen(edit){const m=document.getElementById("lgModal"),u=ACC.get()||{};const gate=m.dataset.gate==="1"&&!ACC.get();document.getElementById("lgClose").hidden=gate;m.querySelector(".lg-gate").hidden=!gate;m.classList.toggle("gate",gate);["Name","Phone","City"].forEach(k=>{document.getElementById("lg"+k).value=u[AC_FILL[k]]||"";});document.getElementById("lgErr").textContent="";m.hidden=false;setTimeout(()=>document.getElementById("lgName").focus(),60);}
 function renderAccount(){const V=document.getElementById("view-account");if(!V)return;const u=ACC.get();
   const head=document.getElementById("acHead"),grid=document.getElementById("acGrid"),list=document.getElementById("acList");
