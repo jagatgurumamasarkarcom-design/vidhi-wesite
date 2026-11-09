@@ -4820,8 +4820,11 @@ async function makeStory(kind){try{await document.fonts.ready;}catch(e){}
 
 /* ---- dukh nivaran: mantra music. The admin can add tracks (audio file, MP3 link or YouTube link). ---- */
 const MN_DEF=[
- {id:"om-namah-shivaya",n:["Om Namah Shivaya","ॐ नमः शिवाय","ૐ નમઃ શિવાય"],txt:"ॐ नमः शिवाय",d:["The five-syllable mantra of Mahadev","महादेव का पंचाक्षर मंत्र","મહાદેવનો પંચાક્ષર મંત્ર"]},
- {id:"mahamrityunjay",n:["Mahamrityunjay mantra","महामृत्युंजय मंत्र","મહામૃત્યુંજય મંત્ર"],txt:"ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम् ।\nउर्वारुकमिव बन्धनान्मृत्योर्मुक्षीय माऽमृतात् ॥",d:["For peace, health and freedom from fear","शांति, आरोग्य और भय से मुक्ति के लिए","શાંતિ, આરોગ્ય અને ભયથી મુક્તિ માટે"]},
+ {id:"om-namah-shivaya",src:"audio/om-namah-shivaya.mp3",n:["Om Namah Shivaya","ॐ नमः शिवाय","ૐ નમઃ શિવાય"],txt:"ॐ नमः शिवाय",d:["The five-syllable mantra of Mahadev","महादेव का पंचाक्षर मंत्र","મહાદેવનો પંચાક્ષર મંત્ર"]},
+ {id:"mahamrityunjay",src:"audio/mahamrityunjay.mp3",n:["Mahamrityunjay mantra","महामृत्युंजय मंत्र","મહામૃત્યુંજય મંત્ર"],txt:"ॐ त्र्यम्बकं यजामहे सुगन्धिं पुष्टिवर्धनम् ।\nउर्वारुकमिव बन्धनान्मृत्योर्मुक्षीय माऽमृतात् ॥",d:["For peace, health and freedom from fear","शांति, आरोग्य और भय से मुक्ति के लिए","શાંતિ, આરોગ્ય અને ભયથી મુક્તિ માટે"]},
+ {id:"shankharan",src:"audio/shankharan.mp3",n:["Shankharan mantra","शंखारण मंत्र","શંખારણ મંત્ર"],d:["The sound of the conch to clear the mind","मन को निर्मल करती शंख की ध्वनि","મનને નિર્મળ કરતો શંખનો નાદ"]},
+ {id:"ektara",src:"audio/ektara.mp3",n:["The sound of the ektara","एकतारा की ध्वनि","એકતારાનો નાદ"],d:["A single string, a single mind","एक तार, एक मन","એક તાર, એક મન"]},
+ {id:"purifying-drone",src:"audio/purifying-drone.mp3",n:["Purifying drone","शुद्धि नाद","શુદ્ધિ નાદ"],d:["A deep, steady sound for dhyan","ध्यान के लिए गहरा, स्थिर नाद","ધ્યાન માટે ઊંડો, સ્થિર નાદ"]},
  {id:"gayatri",n:["Gayatri mantra","गायत्री मंत्र","ગાયત્રી મંત્ર"],txt:"ॐ भूर्भुवः स्वः तत्सवितुर्वरेण्यं\nभर्गो देवस्य धीमहि धियो यो नः प्रचोदयात् ॥",d:["For a clear and steady mind","निर्मल और स्थिर मन के लिए","નિર્મળ અને સ્થિર મન માટે"]}];
 function mnItems(){const m=SITE.mantras;return m&&Array.isArray(m.items)&&m.items.length?m.items:MN_DEF;}
 function mnName(x){return Array.isArray(x.n)?L(...x.n):(x.n||"");}
@@ -4834,7 +4837,7 @@ function mnPlay(id){const x=mnItems().find(i=>i.id===id);if(!x)return;if(MN.on==
   const now=document.getElementById("mnNow");const src=x.src||"",yt=mnYT(src);
   let player="";
   if(yt)player=`<iframe class="yt" src="https://www.youtube-nocookie.com/embed/${yt}?autoplay=1&rel=0&loop=1&playlist=${yt}" allow="autoplay; encrypted-media" allowfullscreen title="${esc(mnName(x))}"></iframe>`;
-  else if(src)player=`<audio controls autoplay loop preload="auto" src="${esc(src.startsWith("http")?src:blobU(src))}"></audio>`;
+  else if(src)player=`<audio controls autoplay loop preload="auto" src="${esc(/^(https?:|audio\/)/.test(src)?src:blobU(src))}"></audio>`;
   now.innerHTML=`<b class="mn-h" style="font-size:20px">${esc(mnName(x))}</b>${x.txt?`<div class="txt">${esc(x.txt)}</div>`:""}${player}<div class="row"><button type="button" data-mnstop>■ ${L("Stop","रोकें","બંધ કરો")}</button></div>${src?"":`<p class="mn-note">${L("A soft tanpura plays while you chant the mantra in your mind.","मन में मंत्र जपते समय धीमा तानपुरा बजता है।","મનમાં મંત્ર જપતી વખતે ધીમો તાનપુરો વાગે છે.")}</p>`}`;
   now.hidden=false;
   if(!src){try{DA.on=true;daCtx();daDrone(true);daBell();}catch(e){}}
