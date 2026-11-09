@@ -9,6 +9,10 @@ on:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
+  # every 2 hours: pick up new videos from the YouTube channels
+  schedule:
+    - cron: '17 */2 * * *'
+
 # Sets the GITHUB_TOKEN permissions to allow deployment to GitHub Pages
 permissions:
   contents: read
@@ -30,6 +34,9 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+      - name: Fetch YouTube videos
+        run: python3 scripts/yt.py site/yt.json || echo '{"channels":[],"videos":[]}' > site/yt.json
+        continue-on-error: true
       - name: Setup Pages
         uses: actions/configure-pages@v5
       - name: Upload artifact
