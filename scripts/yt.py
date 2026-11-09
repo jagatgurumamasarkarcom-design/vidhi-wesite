@@ -44,6 +44,83 @@ for ci, c in enumerate(CHANNELS):
         if m: c["avatar"] = re.sub(r"=s\d+-", "=s176-", html.unescape(m.group(1)))
     except Exception as e:
         print("avatar failed", c["id"], e)
+# ---- every video of each channel (the feed above only gives the newest 15): read the channel's Videos, Shorts and Live tabs ----
+YH = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0 Safari/537.36",
+      "Accept-Language": "hi-IN,hi;q=0.9,en;q=0.5", "Cookie": "CONSENT=YES+1; SOCS=CAI"}
+def yget(url, body=None):
+    req = urllib.request.Request(url, data=json.dumps(body).encode() if body is not None else None,
+                                 headers=dict(YH, **({"Content-Type": "application/json"} if body is not None else {})))
+    return urllib.request.urlopen(req, timeout=30).read().decode("utf-8", "replace")
+def txt(x):
+    if not isinstance(x, dict): return ""
+    return x.get("content") or x.get("simpleText") or "".join(r.get("text", "") for r in x.get("runs", []))
+def walk(o, out):
+    if isinstance(o, list):
+        for x in o: walk(x, out)
+        return
+    if not isinstance(o, dict): return
+    if "lockupViewModel" in o:
+        v = o["lockupViewModel"]; md = (v.get("metadata") or {}).get("lockupMetadataViewModel") or {}
+        if v.get("contentId"): out["items"].append({"id": v["contentId"], "t": txt(md.get("title")), "s": False})
+        return
+    if "videoRenderer" in o:
+        v = o["videoRenderer"]; out["items"].append({"id": v.get("videoId"), "t": txt(v.get("title")), "s": False}); return
+    if "shortsLockupViewModel" in o:
+        v = o["shortsLockupViewModel"]
+        vid = (((v.get("onTap") or {}).get("innertubeCommand") or {}).get("reelWatchEndpoint") or {}).get("videoId")
+        if vid: out["items"].append({"id": vid, "t": txt((v.get("overlayMetadata") or {}).get("primaryText")), "s": True})
+        return
+    if "continuationItemRenderer" in o:
+        t = (((o["continuationItemRenderer"].get("continuationEndpoint") or {}).get("continuationCommand")) or {}).get("token")
+        if t: out["cont"] = t
+        return
+    for k in o: walk(o[k], out)
+def channel_tab(handle, tab):
+    h = yget("https://www.youtube.com/%s/%s?hl=hi&gl=IN" % (handle, tab))
+    m = re.search(r"var ytInitialData = (\{.*?\});</script>", h, re.S)
+    key = re.search(r'"INNERTUBE_API_KEY":"([^"]+)"', h); ver = re.search(r'"INNERTUBE_CLIENT_VERSION":"([^"]+)"', h)
+    if not m or not key: return [], None
+    d = json.loads(m.group(1))
+    tabs = (((d.get("contents") or {}).get("twoColumnBrowseResultsRenderer") or {}).get("tabs")) or []
+    sel = next((t for t in tabs if (t.get("tabRenderer") or {}).get("selected")), None)
+    out = {"items": [], "cont": None}; walk(sel, out)
+    ctx = {"client": {"clientName": "WEB", "clientVersion": ver.group(1) if ver else "2.20241101.00.00", "hl": "hi", "gl": "IN"}}
+    n = 0
+    while out["cont"] and n < 60:
+        n += 1; tok = out["cont"]; out["cont"] = None
+        j = json.loads(yget("https://www.youtube.com/youtubei/v1/browse?key=" + key.group(1), {"context": ctx, "continuation": tok}))
+        walk(j.get("onResponseReceivedActions") or [], out)
+    return out["items"], (key.group(1), ctx)
+def player(vid, kc):
+    j = json.loads(yget("https://www.youtube.com/youtubei/v1/player?key=" + kc[0], {"context": kc[1], "videoId": vid}))
+    vd = j.get("videoDetails") or {}; mf = (j.get("microformat") or {}).get("playerMicroformatRenderer") or {}
+    return vd, mf
+added = 0
+for ci, c in enumerate(CHANNELS):
+    for tab in ("videos", "shorts", "streams"):
+        try:
+            items, kc = channel_tab(c["handle"], tab)
+        except Exception as e:
+            print("tab failed", c["handle"], tab, e); continue
+        print(c["handle"], tab, len(items))
+        for it in items:
+            vid = it["id"]
+            if not vid or vid in vids: continue
+            rec = {"id": vid, "t": it["t"], "ch": ci, "at": "", "s": it["s"] or tab == "shorts", "v": 0, "d": ""}
+            if tab == "streams": rec["live"] = 1
+            try:
+                vd, mf = player(vid, kc)
+                rec["t"] = vd.get("title") or rec["t"]; rec["v"] = int(vd.get("viewCount") or 0)
+                rec["d"] = (vd.get("shortDescription") or "")[:600]; rec["sec"] = int(vd.get("lengthSeconds") or 0)
+                pub = mf.get("publishDate") or mf.get("uploadDate") or ""
+                if pub:
+                    from datetime import datetime, timezone
+                    rec["at"] = datetime.fromisoformat(pub).astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S+00:00")
+            except Exception as e:
+                print("player failed", vid, e)
+            if rec["at"]:
+                vids[vid] = rec; added += 1
+print("added from channel pages:", added)
 # ---- Instagram: newest posts and reels of the trust's account (best effort; thumbnails are saved into the site) ----
 IG_USER = "sanatani_jagatguru_mamasarkar"
 SITE = os.path.dirname(os.path.abspath(sys.argv[1] if len(sys.argv) > 1 else "site/yt.json"))
@@ -51,7 +128,6 @@ os.makedirs(os.path.join(SITE, "ig"), exist_ok=True)
 def fetch_bin(url, headers=None):
     return urllib.request.urlopen(urllib.request.Request(url, headers=headers or UA), timeout=30).read()
 igold = {}
-prev = {}
 try:
     igold = {p["id"]: p for p in prev.get("ig", [])}
 except Exception:
@@ -132,7 +208,7 @@ if not igprof:
             open(os.path.join(SITE, "ig", "_avatar.jpg"), "wb").write(fetch_bin("https://jagatgurumamasarkar.in/ig/_avatar.jpg"))
     except Exception: igprof["avatar"] = ""
 out = {"updated": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "channels": CHANNELS,
-       "videos": sorted(vids.values(), key=lambda v: v["at"], reverse=True)[:400],
+       "videos": sorted(vids.values(), key=lambda v: v["at"], reverse=True)[:1500],
        "igprof": igprof, "ig": sorted(ig.values(), key=lambda v: v["at"], reverse=True)[:300]}
 json.dump(out, open(sys.argv[1] if len(sys.argv) > 1 else "site/yt.json", "w"), ensure_ascii=False)
 print(len(out["videos"]), "videos")
