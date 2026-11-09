@@ -1577,6 +1577,9 @@ main{padding-bottom:0}
 .nav-login svg{width:20px;height:20px}
 .nav-login .av{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(#fdee6a,#e8b24a);color:#5a1a08;font-size:14px;font-weight:800}
 .nav-login~.lang{margin-left:12px!important}
+.adm-who{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;margin:6px 0 4px;font-size:15px}
+.adm-out{font:700 15px var(--font-body);border:0;border-radius:999px;padding:10px 20px;background:#b3261e;color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+.adm-out:hover{background:#8e1c16}
 .lang.lg-lang{display:flex;justify-content:center;width:max-content;max-width:100%;margin:0 auto 10px!important;flex-wrap:wrap}
 .lang.lg-lang button{font-size:15px;padding:8px 14px}
 .lg-box{gap:10px}
@@ -3869,7 +3872,7 @@ function renderAdmin(){const A=document.getElementById("adm");if(!A)return;
         <label>${L("Choose photos","फ़ोटो चुनें")}<input type="file" id="gFile" accept="image/*" multiple></label></div>
       <div class="adm-bar"><button type="button" class="btn" id="gUp"${ADM.busy?" disabled":""}>${L("Upload","अपलोड करें")}</button><a class="btn ghost" href="${page}">${L("See the page","पेज देखें")}</a></div></div>
     <div class="adm-gal">${ph.length?ph.map((p,i)=>`<figure><img src="${esc(blobU(p.id))}" alt="" loading="lazy"><figcaption>${esc(p.cap||"")}</figcaption><button type="button" data-gdel="${i}">${L("Remove","हटाएँ")}</button></figure>`).join(""):`<div class="adm-empty" style="grid-column:1/-1">${L("No photos on this page yet.","इस पेज पर अभी कोई फ़ोटो नहीं।")}</div>`}</div>`;}
-  A.innerHTML=`<h1>${L("Admin","एडमिन")} · ${L("Shree Mamadev Trust","श्री मामादेव ट्रस्ट")}</h1>${ADM.fb?`<p style="font-size:14px">${esc(ADM.who||"")} · <button type="button" class="btn ghost" id="admOut" style="padding:4px 12px;font-size:13px">${L("Sign out","साइन आउट","સાઇન આઉટ")}</button></p>`:""}
+  A.innerHTML=`<h1>${L("Admin","एडमिन")} · ${L("Shree Mamadev Trust","श्री मामादेव ट्रस्ट")}</h1>${ADM.fb?`<div class="adm-who"><span>👤 ${esc(ADM.who||"")}</span><button type="button" class="adm-out" id="admOut">⏻ ${L("Logout","लॉगआउट","લૉગઆઉટ")}</button></div>`:""}
     <div class="adm-tabs" role="group" aria-label="Admin sections">${tabs.map(([k,n])=>`<button type="button" data-tab="${k}" aria-pressed="${ADM.tab===k}">${n}${k==="list"&&ADM.list.some(b=>b.status==="new")?` · ${num(ADM.list.filter(b=>b.status==="new").length)}`:""}</button>`).join("")}</div>
     <p class="adm-msg${ADM.err?" err":""}" id="admMsg" aria-live="polite">${esc(ADM.msg)}</p>${body}`;
 }
