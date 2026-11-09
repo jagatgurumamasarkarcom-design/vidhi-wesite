@@ -35,6 +35,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
       - name: Fetch YouTube videos
+        env:
+          IG_TOKEN: ${{ secrets.IG_TOKEN }}
         run: python3 scripts/yt.py site/yt.json || echo '{"channels":[],"videos":[]}' > site/yt.json
         continue-on-error: true
       - name: Setup Pages

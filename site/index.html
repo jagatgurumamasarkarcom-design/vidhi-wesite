@@ -1681,6 +1681,21 @@ html.rl-lock,html.rl-lock body{overflow:hidden}
 .yt-nx b{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;font-size:14.5px;line-height:1.35;color:#fff}
 .yt-nx span{display:block;font-size:12.5px;color:#cdb895;margin-top:3px}
 .yt-back{display:inline-flex;align-items:center;gap:6px;color:#fdee6a;text-decoration:none;font-weight:600;margin-bottom:12px}
+.yt-h svg{flex:none}
+.yt-ig .th{position:relative}
+.ig-ph{width:100%;height:100%;display:grid;place-items:center;background:linear-gradient(135deg,#feda75,#fa7e1e 35%,#d62976 60%,#4f5bd5)}
+.ig-ph svg{width:44px;height:44px}
+.ig-k{position:absolute;right:8px;top:8px;width:26px;height:26px;display:grid;place-items:center;color:#fff;font-size:16px;text-shadow:0 1px 4px rgba(0,0,0,.6)}
+.ig-k svg{width:22px;height:22px}
+.ig-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-top:10px}
+.yt-ig.sq .th{aspect-ratio:1/1;border-radius:0}
+@media (min-width:900px){.ig-grid{gap:10px;max-width:960px;margin:10px auto 0}.yt-ig.sq .th{border-radius:6px}}
+.ig-head{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:12px 0 4px;max-width:960px;margin-left:auto;margin-right:auto}
+.ig-av{width:72px;height:72px;border-radius:50%;padding:3px;background:linear-gradient(45deg,#feda75,#fa7e1e,#d62976,#4f5bd5);display:grid;place-items:center}
+.ig-av img,.ig-av svg{width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid #140705;box-sizing:border-box}
+.ig-head b{display:block;color:#fff;font-size:17px}
+.ig-head span{font-size:13.5px;color:#cdb895}
+.ig-follow{background:linear-gradient(45deg,#fa7e1e,#d62976,#4f5bd5)!important;color:#fff!important}
 .adm-reel-th{aspect-ratio:9/16;display:grid;place-items:center;background:#1c0d08;color:#f0d6aa;font-size:30px;border-radius:10px;overflow:hidden}
 .adm-reel-th img{width:100%;height:100%;object-fit:cover}
 
@@ -4749,9 +4764,11 @@ const GURU_WA2="919904777477"; // second number for dukh nivaran // Jagatguru's 
 
 
 /* ---- videos page in the style of YouTube: the channels' videos come in by themselves (yt.json is refreshed every 2 hours by the site's GitHub build) ---- */
-const YT={ok:false,loading:false,videos:[],channels:[],f:"all"};
+const YT={ok:false,loading:false,videos:[],channels:[],ig:[],igprof:null,f:"all"};
+const IG_USER="sanatani_jagatguru_mamasarkar";
+const IG_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="igg" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#feda75"/><stop offset=".35" stop-color="#fa7e1e"/><stop offset=".6" stop-color="#d62976"/><stop offset="1" stop-color="#4f5bd5"/></linearGradient></defs><rect x="2" y="2" width="20" height="20" rx="6" fill="url(#igg)"/><circle cx="12" cy="12" r="4.2" fill="none" stroke="#fff" stroke-width="2"/><circle cx="17.3" cy="6.7" r="1.3" fill="#fff"/></svg>';
 const YT_FALLBACK=[{id:"UCxCFUMc_dG9oPxjenLvojjg",name:"JagatGuru MamaSarkar",handle:"@JagatGuruMamaSarkar"}];
-async function ytLoad(){if(YT.loading)return;YT.loading=true;try{const r=await fetch("yt.json?t="+Math.floor(Date.now()/600000),{cache:"no-store"});if(r.ok){const j=await r.json();YT.videos=j.videos||[];YT.channels=j.channels||[];}}catch(e){}
+async function ytLoad(){if(YT.loading)return;YT.loading=true;try{const r=await fetch("yt.json?t="+Math.floor(Date.now()/600000),{cache:"no-store"});if(r.ok){const j=await r.json();YT.videos=j.videos||[];YT.channels=j.channels||[];YT.ig=j.ig||[];YT.igprof=j.igprof||null;}}catch(e){}
   YT.ok=true;rlCombine();ytRoute();}
 const ytCh=i=>YT.channels[i]||YT.channels[0]||YT_FALLBACK[0];
 const ytAv=c=>esc((c&&c.avatar)||"img/logo.png");
@@ -4760,14 +4777,15 @@ function ytAgo(t){const s=(Date.now()-(typeof t==="number"?t:Date.parse(t)))/100
   const u=[["year",31536000],["month",2592000],["week",604800],["day",86400],["hour",3600],["minute",60]];for(const [k,v] of u)if(s>=v)return rf.format(-Math.floor(s/v),k);return rf.format(0,"minute");}
 const ytThumb=id=>`https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 const ytBig=id=>`https://i.ytimg.com/vi/${id}/hq720.jpg`;
-function ytShortCard(x){const thumb=x.kind==="photo"?blobU(x.img):x.kind==="yt"?ytThumb(x.yt):"img/darshan-mamadev.jpg";
+function ytShortCard(x){if(x.kind==="ig")return ytIgCard(x);const thumb=x.kind==="photo"?blobU(x.img):x.kind==="yt"?ytThumb(x.yt):"img/darshan-mamadev.jpg";
   return `<a class="yt-sh" href="#reels-${encodeURIComponent(x.id)}"><div class="th"><img src="${esc(thumb)}" alt="" loading="lazy">${x.auto?"":`<span class="yt-badge">${x.kind==="photo"?"📷 ":"▶ "}${L("Darshan","दर्शन","દર્શન")}</span>`}</div><b>${esc(x.cap||L("Daily darshan","दैनिक दर्शन","દૈનિક દર્શન"))}</b><span>${x.auto?ytViews(x.views):rlDay(x.at)}</span></a>`;}
+function ytIgCard(x,sq){return `<a class="yt-sh yt-ig${sq?" sq":""}" href="#reels-${encodeURIComponent(x.id)}"><div class="th">${x.img?`<img src="${esc(x.img)}" alt="" loading="lazy">`:`<div class="ig-ph">${IG_ICON}</div>`}<span class="ig-k">${x.reel?"▶":IG_ICON}</span></div>${sq?"":`<b>${esc((x.cap||"Instagram").split("\n")[0])}</b><span>${x.likes?"❤ "+num(x.likes)+" · ":""}${rlDay(x.at)}</span>`}</a>`;}
 function ytVidCard(v){const c=ytCh(v.ch);return `<a class="yt-v" href="#watch-${esc(v.id)}"><div class="th"><img src="${ytBig(v.id)}" onerror="this.onerror=null;this.src='${ytThumb(v.id)}'" alt="" loading="lazy"><i>▶</i></div>
   <div class="yt-meta"><img src="${ytAv(c)}" alt="" loading="lazy"><div><b>${esc(v.t)}</b><span>${esc(c.name)}</span><span>${ytViews(v.v)} · ${ytAgo(v.at)}</span></div></div></a>`;}
 const YT_SHORTS_ICON='<svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#f03" d="M17.8 10.1 13 7.4l4-2.1c1.6-.9 2-3 .9-4.5a3.2 3.2 0 0 0-4.2-.9L5.4 4.4A3.4 3.4 0 0 0 4 9c.4.8 1 1.4 1.8 1.7L7 11.3l-3.3 1.8a3.4 3.4 0 0 0-1.4 4.6 3.3 3.3 0 0 0 4.4 1.3l8.3-4.5a3.4 3.4 0 0 0 2.8-4.4z"/><path fill="#fff" d="M10 15V9l5 3z"/></svg>';
 function ytRender(){const H=document.getElementById("ytHome");if(!H||H.hidden&&!H.dataset.init)return;H.dataset.init="1";
-  const long=YT.videos.filter(v=>!v.s),sh=(RL.items||[]),own=(RL.admin||[]),c0=ytCh(0),f=YT.f;
-  const chips=[["all",L("All","सभी","બધા")],["shorts","Shorts"],["videos",L("Videos","वीडियो","વીડિયો")]];if(own.length)chips.push(["darshan",L("Daily darshan","दैनिक दर्शन","દૈનિક દર્શન")]);
+  const long=YT.videos.filter(v=>!v.s),all=(RL.items||[]),sh=all.filter(x=>x.kind!=="ig"),igs=all.filter(x=>x.kind==="ig"),own=(RL.admin||[]).filter(x=>x.kind!=="ig"),c0=ytCh(0),f=YT.f;
+  const chips=[["all",L("All","सभी","બધા")],["videos","YouTube"],["shorts","Shorts"],["ig","Instagram"]];if(own.length)chips.push(["darshan",L("Daily darshan","दैनिक दर्शन","દૈનિક દર્શન")]);
   YT.channels.forEach((c,i)=>{if(YT.channels.length>1)chips.push(["ch"+i,c.name]);});
   const chf=f.startsWith("ch")?+f.slice(2):null;
   const L1=chf===null?long:long.filter(v=>v.ch===chf),S1=chf===null?sh:sh.filter(x=>x.auto&&x.ch===chf);
@@ -4776,8 +4794,10 @@ function ytRender(){const H=document.getElementById("ytHome");if(!H||H.hidden&&!
   else if(f==="shorts")body=`<h2 class="yt-h">${YT_SHORTS_ICON} Shorts</h2><div class="yt-shgrid">${sh.map(ytShortCard).join("")}</div>`;
   else if(f==="darshan")body=`<h2 class="yt-h">🙏 ${L("Daily darshan","दैनिक दर्शन","દૈનિક દર્શન")}</h2><div class="yt-shgrid">${own.map(ytShortCard).join("")}</div>`;
   else if(f==="videos")body=`<div class="yt-grid" style="margin-top:12px">${long.map(ytVidCard).join("")}</div>`;
+  else if(f==="ig"){const pf=YT.igprof||{};body=`<div class="ig-head"><div class="ig-av">${pf.avatar?`<img src="${esc(pf.avatar)}" alt="">`:IG_ICON}</div><div style="flex:1;min-width:180px"><b>@${IG_USER}</b><span>${pf.followers?L(`${num(pf.followers)} followers`,`${num(pf.followers)} फ़ॉलोअर्स`,`${num(pf.followers)} ફૉલોઅર્સ`)+" · ":""}${L(`${num(igs.length)} posts`,`${num(igs.length)} पोस्ट`,`${num(igs.length)} પોસ્ટ`)}</span></div><a class="yt-sub ig-follow" href="https://www.instagram.com/${IG_USER}/" target="_blank" rel="noopener">${L("Follow","फ़ॉलो करें","ફૉલો કરો")}</a></div>
+      ${igs.length?`<div class="ig-grid">${igs.map(x=>ytIgCard(x,1)).join("")}</div>`:`<div class="yt-empty">${L("Instagram posts and reels will appear here.","Instagram की पोस्ट और रील यहाँ दिखेंगी।","Instagram ની પોસ્ટ અને રીલ્સ અહીં દેખાશે.")}<br><br><a class="yt-sub ig-follow" href="https://www.instagram.com/${IG_USER}/" target="_blank" rel="noopener">${L("Open Instagram","Instagram खोलें","Instagram ખોલો")}</a></div>`}`;}
   else{const lead=L1.slice(0,chf===null?6:3).map(ytVidCard).join("");const rest=L1.slice(chf===null?6:3).map(ytVidCard).join("");
-    body=`${lead?`<div class="yt-grid" style="margin-top:12px">${lead}</div>`:""}${S1.length?`<h2 class="yt-h">${YT_SHORTS_ICON} Shorts</h2><div class="yt-shelf">${S1.slice(0,16).map(ytShortCard).join("")}</div>`:""}${rest?`<div class="yt-grid" style="margin-top:22px">${rest}</div>`:""}`;}
+    body=`${lead?`<div class="yt-grid" style="margin-top:12px">${lead}</div>`:""}${S1.length?`<h2 class="yt-h">${YT_SHORTS_ICON} Shorts</h2><div class="yt-shelf">${S1.slice(0,16).map(ytShortCard).join("")}</div>`:""}${chf===null&&igs.length?`<h2 class="yt-h">${IG_ICON} Instagram</h2><div class="yt-shelf">${igs.slice(0,16).map(x=>ytIgCard(x)).join("")}</div>`:""}${rest?`<div class="yt-grid" style="margin-top:22px">${rest}</div>`:""}`;}
   if(YT.ok&&!sh.length&&!long.length)body=`<div class="yt-empty">${L("Videos from our YouTube channel will appear here soon.","हमारे YouTube चैनल के वीडियो जल्द यहाँ दिखेंगे।","અમારી YouTube ચેનલના વીડિયો જલદી અહીં દેખાશે.")}</div>`;
   const sc=H.querySelector(".yt-chips")?.scrollLeft||0;
   H.innerHTML=`<div class="yt-banner" role="img" aria-label="Shri Mamadev Tapobhumi"></div>
@@ -4817,7 +4837,7 @@ function rlParse(u){u=String(u||"").trim();let m;
   return null;}
 function rlSrc(it){
   if(it.kind==="yt")return `https://www.youtube-nocookie.com/embed/${it.yt}?autoplay=1&mute=1&playsinline=1&loop=1&playlist=${it.yt}&rel=0&modestbranding=1&controls=0&enablejsapi=1`;
-  if(it.kind==="ig")return `https://www.instagram.com/reel/${it.ig}/embed/`;
+  if(it.kind==="ig")return `https://www.instagram.com/p/${it.ig}/embed/captioned/`;
   if(it.kind==="gd")return `https://drive.google.com/file/d/${it.gd}/preview`;
   if(it.kind==="fb")return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(it.url)}&show_text=false&autoplay=true&mute=true`;
   return "";}
@@ -4834,7 +4854,8 @@ async function rlLoad(){if(RL.loading)return;RL.loading=true;let db=null;
 /* the shorts viewer plays the trust's own posts and the YouTube Shorts together, newest first */
 function rlCombine(){if(RL.admin===null&&!YT.ok){RL.items=null;return;}
   const ys=(YT.videos||[]).filter(v=>v.s).map(v=>({id:"y-"+v.id,kind:"yt",yt:v.id,cap:v.t,at:Date.parse(v.at)||0,views:v.v,ch:v.ch,auto:1}));
-  RL.items=[...(RL.admin||[]),...ys].sort((a,b)=>(b.at||0)-(a.at||0));rlRender();ytRender();}
+  const is=(YT.ig||[]).map(p=>({id:"i-"+p.id,kind:"ig",ig:p.id,cap:p.t,at:Date.parse(p.at)||0,img:p.img||"",likes:p.likes||0,reel:p.reel,auto:"ig"}));
+  RL.items=[...(RL.admin||[]),...ys,...is].sort((a,b)=>(b.at||0)-(a.at||0));rlRender();ytRender();}
 const rlDay=t=>{if(!t)return "";const d=new Date(t),n=new Date();const same=(a,b)=>a.toDateString()===b.toDateString();const y=new Date(n);y.setDate(n.getDate()-1);
   if(same(d,n))return L("Today","आज","આજે");if(same(d,y))return L("Yesterday","कल","ગઈકાલે");return d.toLocaleDateString(LOC(),{day:"numeric",month:"long"});};
 function rlSize(){const F=document.getElementById("rlFeed");if(!F)return;F.style.height=innerHeight+"px";}
@@ -4847,10 +4868,10 @@ function rlRender(force){const F=document.getElementById("rlFeed");if(!F||!RL.on
   F.innerHTML=it.map((x,i)=>{const photo=x.kind==="photo";const cap=esc(x.cap||"");const liked=RL.liked[x.id];
     const media=photo?`<img class="rl-bg" src="${esc(blobU(x.img))}" alt="" aria-hidden="true" loading="lazy"><img class="rl-img" src="${esc(blobU(x.img))}" alt="${cap}" loading="${i<2?"eager":"lazy"}">`
       :x.kind==="mp4"?`<video class="rl-vid" src="${esc(x.url)}" playsinline loop muted preload="${i<2?"auto":"metadata"}"></video><button type="button" class="rl-shield" data-rltap aria-label="${L("Play or pause","चलाएँ या रोकें","ચલાવો કે રોકો")}"></button><div class="rl-tap" aria-hidden="true">▶</div>`
-      :`<div class="rl-ph">${x.kind==="yt"?`<img src="https://i.ytimg.com/vi/${esc(x.yt)}/hqdefault.jpg" alt="">`:""}<span>▶</span></div><iframe class="rl-if" title="${cap||rlKindName(x.kind)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>${x.kind==="yt"?`<button type="button" class="rl-shield" data-rltap aria-label="${L("Play or pause","चलाएँ या रोकें","ચલાવો કે રોકો")}"></button><div class="rl-tap" aria-hidden="true">▶</div>`:`<button type="button" class="rl-shield" data-rlopen aria-label="${L("Tap to use the video","वीडियो चलाने के लिए छुएँ","વીડિયો ચલાવવા સ્પર્શ કરો")}"></button>`}`;
+      :`<div class="rl-ph">${x.kind==="yt"?`<img src="https://i.ytimg.com/vi/${esc(x.yt)}/hqdefault.jpg" alt="">`:x.img?`<img src="${esc(x.img)}" alt="">`:""}<span>▶</span></div><iframe class="rl-if" title="${cap||rlKindName(x.kind)}" allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen></iframe>${x.kind==="yt"?`<button type="button" class="rl-shield" data-rltap aria-label="${L("Play or pause","चलाएँ या रोकें","ચલાવો કે રોકો")}"></button><div class="rl-tap" aria-hidden="true">▶</div>`:`<button type="button" class="rl-shield" data-rlopen aria-label="${L("Tap to use the video","वीडियो चलाने के लिए छुएँ","વીડિયો ચલાવવા સ્પર્શ કરો")}"></button>`}`;
     const sound=(x.kind==="yt"||x.kind==="mp4")?`<button type="button" data-rlsnd aria-label="${L("Sound","आवाज़","અવાજ")}">${RL.snd?"🔊":"🔇"}</button>`:"";
     return `<section class="rl-it" data-rl="${esc(x.id)}" data-i="${i}"><div class="rl-card">${media}<div class="rl-shade"></div>
-      <div class="rl-info"><span class="rl-day">${rlDay(x.at)}${x.auto&&x.views?" · "+ytViews(x.views):""}</span>${cap?`<p>${cap}</p>`:""}</div>
+      <div class="rl-info"><span class="rl-day">${x.kind==="ig"?"Instagram · ":x.auto?"YouTube · ":""}${rlDay(x.at)}${x.auto&&x.views?" · "+ytViews(x.views):""}${x.likes?" · ❤ "+num(x.likes):""}</span>${cap?`<p>${cap}</p>`:""}</div>
       <div class="rl-act"><button type="button" data-rlike class="${liked?"on":""}" aria-label="${L("Jai","जय","જય")}">❤</button><small>${L("Jai","जय","જય")}</small>${sound}<button type="button" data-rlshare aria-label="${L("Share","शेयर करें","શેર કરો")}">➦</button><small>${L("Share","शेयर","શેર")}</small>${photo?`<button type="button" data-rlsave aria-label="${L("Save photo","फ़ोटो सेव करें","ફોટો સેવ કરો")}">⬇</button>`:""}</div>
       <div class="rl-heart" aria-hidden="true">❤</div></div></section>`;}).join("");
   RL.cur=-1;if(RL.obs)RL.obs.disconnect();
