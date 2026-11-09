@@ -4714,7 +4714,10 @@ function stBg(c,W,H,a,b,cc){const g=c.createLinearGradient(0,0,0,H);g.addColorSt
 function stRR(c,x,y,w,h,r){c.beginPath();c.moveTo(x+r,y);c.arcTo(x+w,y,x+w,y+h,r);c.arcTo(x+w,y+h,x,y+h,r);c.arcTo(x,y+h,x,y,r);c.arcTo(x,y,x+w,y,r);c.closePath();}
 async function stFrame(c,W,H,hash){const logo=await stLoad("img/logo.png");
   c.textAlign="center";c.fillStyle="#fdee6a";c.font=stFont(700,40,true);c.fillText(L("Jai Shri Mamadev","जय श्री मामादेव","જય શ્રી મામાદેવ")+" 🙏",W/2,290);
-  if(logo){c.save();c.beginPath();c.arc(W/2,380,58,0,7);c.clip();c.drawImage(logo,W/2-58,322,116,116);c.restore();c.strokeStyle="#fdee6a";c.lineWidth=4;c.beginPath();c.arc(W/2,380,60,0,7);c.stroke();}
+  {const gp=await stLoad("img/guru.png");const R=78,cx=W/2,cy=384;const g=c.createRadialGradient(cx,cy,R*.6,cx,cy,R*1.9);g.addColorStop(0,"rgba(255,200,90,.55)");g.addColorStop(1,"rgba(255,170,60,0)");c.fillStyle=g;c.beginPath();c.arc(cx,cy,R*1.9,0,7);c.fill();
+    c.save();c.beginPath();c.arc(cx,cy,R,0,7);c.clip();c.fillStyle="#ff8a1c";c.fillRect(cx-R,cy-R,2*R,2*R);if(gp){const sw=300,sx=95,sy=0;const sc=(2*R)/sw;c.drawImage(gp,sx,sy,sw,sw,cx-R,cy-R,2*R,2*R);}c.restore();
+    c.strokeStyle="#fdee6a";c.lineWidth=6;c.beginPath();c.arc(cx,cy,R+3,0,7);c.stroke();
+    if(logo){c.save();c.beginPath();c.arc(cx+R*.78,cy+R*.72,30,0,7);c.clip();c.fillStyle="#fff";c.fill();c.drawImage(logo,cx+R*.78-30,cy+R*.72-30,60,60);c.restore();c.strokeStyle="#fdee6a";c.lineWidth=3;c.beginPath();c.arc(cx+R*.78,cy+R*.72,31,0,7);c.stroke();}}
   // footer link pill (kept above the bottom safe zone)
   const link=SITE_URL+(hash&&hash!=="home"?"/#"+hash:"");c.font=stFont(700,40);const tw=c.measureText(link).width+90;
   stRR(c,W/2-tw/2,H-330,tw,92,46);c.fillStyle="#fdee6a";c.fill();c.fillStyle="#4a1206";c.fillText("🔗 "+link,W/2,H-270);
@@ -4803,12 +4806,12 @@ async function makeStory(kind){try{await document.fonts.ready;}catch(e){}
   async function open(kind,btn){const b=document.getElementById("fabStory");b.disabled=true;if(btn)btn.classList.add("busy");try{const r=await makeStory(kind);if(ST.url)URL.revokeObjectURL(ST.url);Object.assign(ST,r);document.getElementById("stImg").src=r.url;
       const f=new File([r.blob],r.name,{type:"image/jpeg"});const can=!!(navigator.canShare&&navigator.canShare({files:[f]}));document.getElementById("stShare").hidden=!can;
       try{await navigator.clipboard.writeText(link());ST.copied=1;}catch(e){ST.copied=0;}txt();
-      if(can){try{await navigator.share({files:[f]});b.disabled=false;if(btn)btn.classList.remove("busy");return;}catch(e){if(e&&e.name==="AbortError"){b.disabled=false;if(btn)btn.classList.remove("busy");return;}}}
+      if(can){try{await navigator.share({files:[f],text:L("Jai Shri Mamadev 🙏","जय श्री मामादेव 🙏","જય શ્રી મામાદેવ 🙏")+" "+link()});b.disabled=false;if(btn)btn.classList.remove("busy");return;}catch(e){if(e&&e.name==="AbortError"){b.disabled=false;if(btn)btn.classList.remove("busy");return;}}}
       m.hidden=false;}catch(e){console.log("[story]",e);}b.disabled=false;if(btn)btn.classList.remove("busy");}
   document.getElementById("fabStory").addEventListener("click",()=>open());
   document.addEventListener("click",e=>{const b=e.target.closest("[data-story]");if(b){e.preventDefault();e.stopPropagation();open(b.dataset.story,b);}},true);
   const link=()=>"https://"+SITE_URL+"/"+(ST.hash&&ST.hash!=="home"?"#"+ST.hash:"");
-  document.getElementById("stShare").addEventListener("click",async()=>{try{await navigator.share({files:[new File([ST.blob],ST.name,{type:"image/jpeg"})]});}catch(e){}});
+  document.getElementById("stShare").addEventListener("click",async()=>{try{await navigator.share({files:[new File([ST.blob],ST.name,{type:"image/jpeg"})],text:L("Jai Shri Mamadev 🙏","जय श्री मामादेव 🙏","જય શ્રી મામાદેવ 🙏")+" "+link()});}catch(e){}});
   document.getElementById("stWa").addEventListener("click",async()=>{const t=L("Jai Shri Mamadev 🙏","जय श्री मामादेव 🙏","જય શ્રી મામાદેવ 🙏")+" "+link();try{await navigator.share({files:[new File([ST.blob],ST.name,{type:"image/jpeg"})],text:t});}catch(e){if(!(e&&e.name==="AbortError"))window.open("https://wa.me/?text="+encodeURIComponent(t),"_blank");}});
   document.getElementById("stSave").addEventListener("click",async()=>{let dl=null;try{dl=window.claude&&claude.use?await claude.use("downloads"):null;}catch(e){}
     if(dl){try{await dl.save({filename:ST.name,data:ST.blob});}catch(e){}return;}const a=document.createElement("a");a.href=ST.url;a.download=ST.name;document.body.appendChild(a);a.click();a.remove();});
