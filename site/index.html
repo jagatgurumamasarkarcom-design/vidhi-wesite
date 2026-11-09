@@ -4549,8 +4549,14 @@ function dkAuto(body){const ks=dkKeys();if(!ks.length)return false;const t=body.
   ks.forEach(k=>{const u="https://api.callmebot.com/whatsapp.php?phone=%2B"+k.phone+"&text="+encodeURIComponent(t)+"&apikey="+encodeURIComponent(k.key);
     try{fetch(u,{mode:"no-cors",cache:"no-store"}).catch(()=>{const im=new Image();im.src=u;});}catch(e){const im=new Image();im.src=u;}});return true;}
 /* dukh nivaran: also kept for the trust's admin page (readable only by the admin) */
+/* messages waiting to reach the admin page: kept on the phone until saved, retried when the devotee comes back from WhatsApp or opens the site again */
+const dkQ={get(){try{return JSON.parse(localStorage.getItem("jg-dk-q")||"[]");}catch(e){return [];}},put(a){try{localStorage.setItem("jg-dk-q",JSON.stringify(a.slice(-10)));}catch(e){}},
+  add(it){const a=dkQ.get();a.push(it);dkQ.put(a);},done(c){dkQ.put(dkQ.get().filter(x=>x.created!==c));},busy:false,
+  async flush(){if(!FB_ON||dkQ.busy)return;const a=dkQ.get();if(!a.length)return;dkQ.busy=true;try{for(const it of a){if(await fbInbox(it))dkQ.done(it.created);}}finally{dkQ.busy=false;}}};
+if(typeof FB_ON!=="undefined"&&FB_ON){setTimeout(()=>dkQ.flush(),2500);document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")dkQ.flush();});
+  const pre=()=>{if(location.hash==="#dukh")fbLoad().catch(()=>{});};addEventListener("hashchange",pre);setTimeout(pre,800);}
 async function dkSave(body){try{const b=parseMsg(body);const topics=[...document.querySelectorAll('#view-dukh .dk-chip[aria-pressed="true"]')].map(x=>x.textContent.trim()).join(", ");const d=DHAM.find(x=>x.id===dhSel);
-  if(FB_ON){await fbInbox({type:"dukh",status:"new",created:Date.now(),title:topics||L("Dukh nivaran","दुःख निवारण"),name:b.name,phone:b.phone,city:b.city,date:d?L(...d.n):"",amount:0,note:"",raw:body});return;}
+  if(FB_ON){const it={type:"dukh",status:"new",created:Date.now(),title:topics||L("Dukh nivaran","दुःख निवारण"),name:b.name,phone:b.phone,city:b.city,date:d?L(...d.n):"",amount:0,note:"",raw:body};dkQ.add(it);if(await fbInbox(it))dkQ.done(it.created);return;}
   if(!(window.claude&&claude.use))return;const db=await claude.use("db");if(!db)return;
   const user=await claude.use("user");const uid=user&&await user.id();if(!uid)return;const ref=db.doc("dukh/"+uid);let items=[];try{const g=await ref.get();if(g.exists)items=(g.data().items||[]).slice(-40);}catch(e){}
   items.push({type:"dukh",status:"new",created:Date.now(),title:topics||L("Dukh nivaran","दुःख निवारण"),name:b.name,phone:b.phone,city:b.city,date:d?L(...d.n):"",amount:0,note:"",raw:body});
