@@ -1329,6 +1329,23 @@ main{padding-bottom:0}
 .pan-g span{display:block;font-size:12.5px;font-weight:700;color:#ffcf7a;letter-spacing:.04em}
 .pan-g b{font-size:16px;color:#fff3dc}
 .pan-next .pan-today{background:linear-gradient(#fdee6a,#e8b24a)!important;color:#5a1a08!important;border-color:transparent!important}.pan-next .pan-today b{color:#5a1a08!important}
+.chg{margin-top:18px;padding:22px;border-radius:24px;background:linear-gradient(150deg,rgba(255,220,150,.1),rgba(255,220,150,.03));border:1px solid rgba(255,220,150,.22)}
+.chg-h{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+.chg-now{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:10px 16px;border-radius:16px;background:rgba(255,255,255,.08)}
+.chg-now small{font-weight:700;opacity:.8}.chg-now b{font-family:var(--font-head);font-size:26px;color:#fff3dc}.chg-now span{font-size:14px;font-weight:600}
+.chg-tabs{display:flex;gap:8px;margin-bottom:12px}
+.chg-tabs button{border:1px solid rgba(255,220,150,.35);background:transparent;color:inherit;border-radius:999px;padding:8px 16px;font:700 14px var(--font-body);cursor:pointer}
+.chg-tabs button[aria-pressed="true"]{background:linear-gradient(#fdee6a,#e8b24a);color:#5a1a08;border-color:transparent}
+.chg-g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:640px){.chg-g{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.chg-c{padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.06);border-left:5px solid #888}
+.chg-c b{display:block;font-size:17px;color:#fff3dc}.chg-c span{font-size:13px;opacity:.85}
+.chg-c.on{outline:2px solid #fdee6a;background:rgba(253,238,106,.16)}
+.q-g{border-left-color:#22c55e!important}.q-n{border-left-color:#eab308!important}.q-b{border-left-color:#ef4444!important}
+.chg-now.q-g{box-shadow:inset 5px 0 #22c55e}.chg-now.q-n{box-shadow:inset 5px 0 #eab308}.chg-now.q-b{box-shadow:inset 5px 0 #ef4444}
+.chg-k{margin:12px 0 0;font-size:13px;opacity:.85;display:flex;gap:6px 14px;flex-wrap:wrap;align-items:center}
+.chg-k i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:-8px;vertical-align:middle}
+.chg-k i.q-g{background:#22c55e}.chg-k i.q-n{background:#eab308}.chg-k i.q-b{background:#ef4444}
 .pan-next{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:18px}
 .pan-next span{font-size:14.5px;padding:8px 16px;border-radius:999px;background:rgba(255,220,150,.1);border:1px solid rgba(255,220,150,.3)}
 .pan-next b{color:#fdee6a}
@@ -2029,6 +2046,7 @@ html.mm-open .fab-wa,html.mm-open .fab-story,html.mm-open .app-toast{display:non
         <div class="pan-moon" aria-hidden="true"><svg viewBox="0 0 100 100" id="panMoon"></svg></div>
         <div class="pan-g" id="panGrid"></div>
       </div>
+      <div class="chg" id="chog"></div>
       <div class="pan-next" id="panNext"></div>
       <div class="pan-share"><button type="button" class="pill gold" data-story="panchang" id="panStoryB">📲 Story</button><a class="pill line" href="#calendar">📅 <span data-t="pa3">Month calendar</span></a></div>
     </div></section>
@@ -4526,6 +4544,29 @@ function renderPanchang(){const el=document.getElementById("panTithi");if(!el)re
   const lab={sb:L("Shukla Dwitiya (Sud Bij)","शुक्ल द्वितीया (सुद बीज)","સુદ બીજ"),ek:L("Ekadashi","एकादशी"),sh:L("Masik Shivratri","मासिक शिवरात्रि","માસિક શિવરાત્રિ"),pu:L("Purnima","पूर्णिमा","પૂનમ"),am:L("Amavasya","अमावस्या","અમાસ")};
   document.getElementById("panNext").innerHTML=Object.entries(nx).sort((a,b)=>a[1]-b[1]).map(([k2,dt])=>dt.getTime()===now.getTime()?`<span class="pan-today">${L("Today","आज","આજે")}: <b>${lab[k2]}</b> 🙏</span>`:`<span>${L("Next","आगामी")} ${lab[k2]}: <b>${dt.toLocaleDateString(LOC(),{day:"numeric",month:"long"}).replace(/\d/g,x=>num(x))}</b></span>`).join("");}
 renderPanchang();langHooks.push(renderPanchang);setInterval(renderPanchang,10*60000);
+/* ---- choghadiya: the day (sunrise to sunset) and the night (sunset to next sunrise) in 8 parts each ---- */
+const CHG={Amrit:["Amrit","अमृत","અમૃત","g"],Shubh:["Shubh","शुभ","શુભ","g"],Labh:["Labh","लाभ","લાભ","g"],Char:["Char","चर","ચલ","n"],Udveg:["Udveg","उद्वेग","ઉદ્વેગ","b"],Rog:["Rog","रोग","રોગ","b"],Kaal:["Kaal","काल","કાળ","b"]};
+const CHG_DAY=["Udveg","Char","Labh","Amrit","Kaal","Shubh","Rog"],CHG_NIGHT=["Shubh","Amrit","Char","Rog","Kaal","Labh","Udveg"];
+const CHG_D0=["Udveg","Amrit","Rog","Labh","Shubh","Char","Kaal"],CHG_N0=["Shubh","Char","Kaal","Udveg","Amrit","Rog","Labh"];
+CHG.tab=null;
+function chogList(now){// now = IST wall-clock Date; returns {day:[{n,a,b}],night:[...],wd}
+  let d=PAN.day(now);const h=now.getHours()+now.getMinutes()/60;
+  if(h<d.sr){const y=new Date(now);y.setDate(y.getDate()-1);d=PAN.day(y);d.prev=1;}
+  const nx=new Date(now);if(!d.prev)nx.setDate(nx.getDate()+1);const sr2=PAN.day(nx).sr+24;
+  const mk=(start,end,seq,first)=>{const k=seq.indexOf(first),len=(end-start)/8;return Array.from({length:8},(_,i)=>({n:seq[(k+i)%7],a:start+i*len,b:start+(i+1)*len}));};
+  return {day:mk(d.sr,d.ss,CHG_DAY,CHG_D0[d.wd]),night:mk(d.ss,sr2,CHG_NIGHT,CHG_N0[d.wd]),wd:d.wd,prev:!!d.prev};}
+function renderChog(){const el=document.getElementById("chog");if(!el)return;const now=new Date(Date.now()+(5.5*60+new Date().getTimezoneOffset())*60000);
+  const c=chogList(now);let h=now.getHours()+now.getMinutes()/60;if(c.prev)h+=24;
+  const cur=[...c.day,...c.night].find(x=>h>=x.a&&h<x.b);const isNight=cur&&c.night.includes(cur);const tab=CHG.tab||(isNight?"night":"day");
+  const nm=x=>{const v=CHG[x.n];return L(v[0],v[1],v[2]);};const q=x=>CHG[x.n][3];
+  const lbl={g:L("Good","शुभ","શુભ"),n:L("Fine for travel","यात्रा के लिए ठीक","મુસાફરી માટે ઠીક"),b:L("Avoid","टालें","ટાળો")};
+  el.innerHTML=`<div class="chg-h"><span class="pan-eye">⏳ ${L("Choghadiya","चौघड़िया","ચોઘડિયાં")}</span>${cur?`<div class="chg-now q-${q(cur)}"><small>${L("Now","अभी","અત્યારે")}</small><b>${nm(cur)}</b><span>${hm(cur.a)} – ${hm(cur.b)} · ${lbl[q(cur)]}</span></div>`:""}</div>
+    <div class="chg-tabs" role="group"><button type="button" data-chg="day" aria-pressed="${tab==="day"}">☀️ ${L("Day","दिन","દિવસ")}</button><button type="button" data-chg="night" aria-pressed="${tab==="night"}">🌙 ${L("Night","रात","રાત")}</button></div>
+    <div class="chg-g">${c[tab].map(x=>`<div class="chg-c q-${q(x)}${x===cur?" on":""}"><b>${nm(x)}</b><span>${hm(x.a)} – ${hm(x.b)}</span></div>`).join("")}</div>
+    <p class="chg-k"><i class="q-g"></i>${lbl.g} <i class="q-n"></i>${lbl.n} <i class="q-b"></i>${lbl.b}</p>`;}
+(function(){const el=document.getElementById("chog");if(!el)return;renderChog();langHooks.push(renderChog);setInterval(renderChog,60000);
+  el.addEventListener("click",e=>{const b=e.target.closest("[data-chg]");if(b){CHG.tab=b.dataset.chg;renderChog();}});})();
+
 
 /* ---- nav: "More" menu ---- */
 (function(){const b=document.getElementById("moreB"),m=document.getElementById("moreM");if(!b)return;
