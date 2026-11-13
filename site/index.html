@@ -1334,6 +1334,13 @@ main{padding-bottom:0}
 .chg-now{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:10px 16px;border-radius:16px;background:rgba(255,255,255,.08)}
 .chg-now small{font-weight:700;opacity:.8}.chg-now b{font-family:var(--font-head);font-size:26px;color:#fff3dc}.chg-now span{font-size:14px;font-weight:600}
 .chg-tabs{display:flex;gap:8px;margin-bottom:12px}
+.chg-d{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.chg-d button{border:1px solid rgba(255,220,150,.35);background:rgba(255,255,255,.06);color:inherit;border-radius:12px;padding:8px 12px;font:700 14px var(--font-body);cursor:pointer}
+.chg-d .chg-today{background:linear-gradient(#fdee6a,#e8b24a);color:#5a1a08;border-color:transparent}
+.chg-d label{position:relative;flex:1;min-width:0;font-size:14px;display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:12px;background:rgba(255,255,255,.08);font-weight:700;cursor:pointer}
+.chg-d input[type=date]{position:absolute;inset:0;opacity:0;width:100%;cursor:pointer}
+.chg-d label::before{content:"📅"}
+.cal-chg{margin:16px 0}.cal-chg h4{margin:12px 0 8px;font-size:15px}
 .chg-tabs button{border:1px solid rgba(255,220,150,.35);background:transparent;color:inherit;border-radius:999px;padding:8px 16px;font:700 14px var(--font-body);cursor:pointer}
 .chg-tabs button[aria-pressed="true"]{background:linear-gradient(#fdee6a,#e8b24a);color:#5a1a08;border-color:transparent}
 .chg-g{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
@@ -4549,23 +4556,34 @@ const CHG={Amrit:["Amrit","अमृत","અમૃત","g"],Shubh:["Shubh","श
 const CHG_DAY=["Udveg","Char","Labh","Amrit","Kaal","Shubh","Rog"],CHG_NIGHT=["Shubh","Amrit","Char","Rog","Kaal","Labh","Udveg"];
 const CHG_D0=["Udveg","Amrit","Rog","Labh","Shubh","Char","Kaal"],CHG_N0=["Shubh","Char","Kaal","Udveg","Amrit","Rog","Labh"];
 CHG.tab=null;
-function chogList(now){// now = IST wall-clock Date; returns {day:[{n,a,b}],night:[...],wd}
-  let d=PAN.day(now);const h=now.getHours()+now.getMinutes()/60;
-  if(h<d.sr){const y=new Date(now);y.setDate(y.getDate()-1);d=PAN.day(y);d.prev=1;}
-  const nx=new Date(now);if(!d.prev)nx.setDate(nx.getDate()+1);const sr2=PAN.day(nx).sr+24;
+function chogFor(date){// choghadiya of one calendar date: from its sunrise to the next sunrise (Ahmedabad)
+  const d=PAN.day(date),nx=new Date(date);nx.setDate(nx.getDate()+1);const sr2=PAN.day(nx).sr+24;
   const mk=(start,end,seq,first)=>{const k=seq.indexOf(first),len=(end-start)/8;return Array.from({length:8},(_,i)=>({n:seq[(k+i)%7],a:start+i*len,b:start+(i+1)*len}));};
-  return {day:mk(d.sr,d.ss,CHG_DAY,CHG_D0[d.wd]),night:mk(d.ss,sr2,CHG_NIGHT,CHG_N0[d.wd]),wd:d.wd,prev:!!d.prev};}
+  return {day:mk(d.sr,d.ss,CHG_DAY,CHG_D0[d.wd]),night:mk(d.ss,sr2,CHG_NIGHT,CHG_N0[d.wd]),wd:d.wd};}
+function chogList(now){// now = IST wall-clock Date
+  const d=PAN.day(now);const h=now.getHours()+now.getMinutes()/60;
+  if(h<d.sr){const y=new Date(now);y.setDate(y.getDate()-1);return {...chogFor(y),prev:true};}
+  return {...chogFor(now),prev:false};}
+const chogName=x=>{const v=CHG[x.n];return L(v[0],v[1],v[2]);};
+function chogCells(list,cur){return `<div class="chg-g">${list.map(x=>`<div class="chg-c q-${CHG[x.n][3]}${x===cur?" on":""}"><b>${chogName(x)}</b><span>${hm(x.a)} – ${hm(x.b)}</span></div>`).join("")}</div>`;}
+const chogKey=()=>{const lbl={g:L("Good","शुभ","શુભ"),n:L("Fine for travel","यात्रा के लिए ठीक","મુસાફરી માટે ઠીક"),b:L("Avoid","टालें","ટાળો")};return `<p class="chg-k"><i class="q-g"></i>${lbl.g} <i class="q-n"></i>${lbl.n} <i class="q-b"></i>${lbl.b}</p>`;};
 function renderChog(){const el=document.getElementById("chog");if(!el)return;const now=new Date(Date.now()+(5.5*60+new Date().getTimezoneOffset())*60000);
-  const c=chogList(now);let h=now.getHours()+now.getMinutes()/60;if(c.prev)h+=24;
-  const cur=[...c.day,...c.night].find(x=>h>=x.a&&h<x.b);const isNight=cur&&c.night.includes(cur);const tab=CHG.tab||(isNight?"night":"day");
+  const iso=x=>x.getFullYear()+"-"+String(x.getMonth()+1).padStart(2,"0")+"-"+String(x.getDate()).padStart(2,"0");
+  const sel=CHG.date&&iso(CHG.date)!==iso(now)?CHG.date:null;
+  const c=sel?chogFor(sel):chogList(now);let h=now.getHours()+now.getMinutes()/60;if(c.prev)h+=24;
+  const cur=sel?null:[...c.day,...c.night].find(x=>h>=x.a&&h<x.b);const isNight=cur&&c.night.includes(cur);const tab=CHG.tab||(isNight?"night":"day");
+  const shown=sel||(c.prev?new Date(now.getTime()-86400000):now);
+  const dnav=`<div class="chg-d"><button type="button" data-chgd="-1" aria-label="${L("Previous day","पिछला दिन","પાછલો દિવસ")}">◀</button><label><input type="date" id="chgDate" value="${iso(shown)}" min="2026-01-01" max="2030-12-31"><span>${L(...VAAR[shown.getDay()])}, ${shown.toLocaleDateString(LOC(),{day:"numeric",month:"long",year:"numeric"}).replace(/\d/g,x=>num(x))}</span></label><button type="button" data-chgd="1" aria-label="${L("Next day","अगला दिन","આવતો દિવસ")}">▶</button>${sel?`<button type="button" data-chgd="0" class="chg-today">${L("Today","आज","આજે")}</button>`:""}</div>`;
   const nm=x=>{const v=CHG[x.n];return L(v[0],v[1],v[2]);};const q=x=>CHG[x.n][3];
   const lbl={g:L("Good","शुभ","શુભ"),n:L("Fine for travel","यात्रा के लिए ठीक","મુસાફરી માટે ઠીક"),b:L("Avoid","टालें","ટાળો")};
-  el.innerHTML=`<div class="chg-h"><span class="pan-eye">⏳ ${L("Choghadiya","चौघड़िया","ચોઘડિયાં")}</span>${cur?`<div class="chg-now q-${q(cur)}"><small>${L("Now","अभी","અત્યારે")}</small><b>${nm(cur)}</b><span>${hm(cur.a)} – ${hm(cur.b)} · ${lbl[q(cur)]}</span></div>`:""}</div>
+  el.innerHTML=`<div class="chg-h"><span class="pan-eye">⏳ ${L("Choghadiya","चौघड़िया","ચોઘડિયાં")}</span>${cur?`<div class="chg-now q-${q(cur)}"><small>${L("Now","अभी","અત્યારે")}</small><b>${nm(cur)}</b><span>${hm(cur.a)} – ${hm(cur.b)} · ${lbl[q(cur)]}</span></div>`:""}</div>${dnav}
     <div class="chg-tabs" role="group"><button type="button" data-chg="day" aria-pressed="${tab==="day"}">☀️ ${L("Day","दिन","દિવસ")}</button><button type="button" data-chg="night" aria-pressed="${tab==="night"}">🌙 ${L("Night","रात","રાત")}</button></div>
     <div class="chg-g">${c[tab].map(x=>`<div class="chg-c q-${q(x)}${x===cur?" on":""}"><b>${nm(x)}</b><span>${hm(x.a)} – ${hm(x.b)}</span></div>`).join("")}</div>
     <p class="chg-k"><i class="q-g"></i>${lbl.g} <i class="q-n"></i>${lbl.n} <i class="q-b"></i>${lbl.b}</p>`;}
 (function(){const el=document.getElementById("chog");if(!el)return;renderChog();langHooks.push(renderChog);setInterval(renderChog,60000);
-  el.addEventListener("click",e=>{const b=e.target.closest("[data-chg]");if(b){CHG.tab=b.dataset.chg;renderChog();}});})();
+  el.addEventListener("click",e=>{const b=e.target.closest("[data-chg]");if(b){CHG.tab=b.dataset.chg;renderChog();return;}
+    const s=e.target.closest("[data-chgd]");if(s){const k=+s.dataset.chgd;const now=new Date(Date.now()+(5.5*60+new Date().getTimezoneOffset())*60000);if(!k){CHG.date=null;}else{const base=CHG.date||new Date(now.getFullYear(),now.getMonth(),now.getDate());const d=new Date(base);d.setDate(d.getDate()+k);CHG.date=d;}CHG.tab=CHG.date?"day":null;renderChog();}});
+  el.addEventListener("change",e=>{if(e.target.id==="chgDate"&&e.target.value){const [y,m,d]=e.target.value.split("-").map(Number);CHG.date=new Date(y,m-1,d);CHG.tab="day";renderChog();}});})();
 
 
 /* ---- nav: "More" menu ---- */
@@ -4692,6 +4710,7 @@ function renderCalDay(){const box=document.getElementById("calDay");if(!box)retu
   const endTxt=dd.end?(()=>{const t=new Date(dd.end+5.5*3600000);return hm(t.getUTCHours()+t.getUTCMinutes()/60);})():"—";
   box.innerHTML=`<b class="h">${L(...VAAR[dd.wd])}, ${new Date(CAL.y,CAL.m,d).toLocaleDateString(LOC(),{day:"numeric",month:"long"}).replace(/\d/g,x=>num(x))} · ${tn.paksha} ${tn.nm}${mk?" · "+mk[1]:""}</b>
     <div class="pan-g">${[[L("Tithi until","तिथि समाप्ति"),endTxt],[L("Nakshatra","नक्षत्र"),L(...NAK[dd.nk])],[L("Sunrise","सूर्योदय"),hm(dd.sr)],[L("Sunset","सूर्यास्त"),hm(dd.ss)],[L("Rahu kaal","राहुकाल"),hm(dd.rk[0])+" – "+hm(dd.rk[1])],[L("Paksha","पक्ष"),tn.paksha]].map(([a,b])=>`<div><span>${a}</span><b>${b}</b></div>`).join("")}</div>
+    ${(()=>{const c=chogFor(new Date(CAL.y,CAL.m,d));return `<div class="chg cal-chg"><span class="pan-eye">⏳ ${L("Choghadiya","चौघड़िया","ચોઘડિયાં")}</span><h4>☀️ ${L("Day","दिन","દિવસ")}</h4>${chogCells(c.day)}<h4>🌙 ${L("Night","रात","રાત")}</h4>${chogCells(c.night)}${chogKey()}</div>`;})()}
     <a class="pill gold" href="#yagna">🔥 ${L("Book a yagna or pooja for this day","इस दिन के लिए यज्ञ या पूजा बुक करें","આ દિવસ માટે યજ્ઞ કે પૂજા બુક કરો")}</a>`;}
 (function(){const V=document.getElementById("view-calendar");if(!V)return;
   const go=()=>{if(location.hash.slice(1)==="calendar")renderCal();};addEventListener("hashchange",go);go();langHooks.push(()=>{if(V.classList.contains("on"))renderCal();});
