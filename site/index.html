@@ -1765,6 +1765,21 @@ html.rl-lock,html.rl-lock body{overflow:hidden}
 .sp-car{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none}
 .sp-car::-webkit-scrollbar{display:none}
 .sp-car img{flex:none;width:100%;max-height:78vh;aspect-ratio:4/5;object-fit:cover;scroll-snap-align:center}
+.car-ph,.car-txs{flex:none;width:100%;max-height:78vh;aspect-ratio:4/5;scroll-snap-align:center;position:relative;background:#2a120a;overflow:hidden}
+.car-ph img{width:100%;height:100%;object-fit:cover}.car-ph img.blur{filter:blur(12px);transform:scale(1.1)}
+.car-txs{display:grid;place-items:center;padding:34px 28px;box-sizing:border-box;text-align:center;color:#fff}
+.car-txs b{display:block;font-size:clamp(24px,4.6vw,34px);line-height:1.25;margin-bottom:12px;text-shadow:0 2px 12px rgba(0,0,0,.3)}.car-txs p{margin:0;font-size:clamp(17px,3.2vw,22px);line-height:1.55;white-space:pre-wrap}
+.car-txs.vb4{color:#5a1d08}
+.car-nav{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;border-radius:50%;border:0;background:rgba(0,0,0,.45);color:#fff;font-size:24px;line-height:1;cursor:pointer;z-index:2}
+.car-nav.p{left:8px}.car-nav.n{right:8px}
+@media (hover:none){.car-nav{display:none}}
+.car-ed{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px}
+.car-sl{position:relative;flex:none;width:96px;aspect-ratio:4/5;border-radius:10px;overflow:hidden;background:#eee;border:2px solid rgba(0,0,0,.15)}
+.car-sl img{width:100%;height:100%;object-fit:cover}.car-sl i{position:absolute;left:4px;top:4px;background:rgba(0,0,0,.6);color:#fff;font-style:normal;font-size:11px;padding:1px 6px;border-radius:999px}
+.car-tx{width:100%;height:100%;padding:8px;box-sizing:border-box;color:#fff;font-size:10px;overflow:hidden}.car-tx b{display:block;font-size:11px}.car-tx.vb4{color:#5a1d08}
+.car-b{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-between;background:rgba(0,0,0,.55)}.car-b button{flex:1;border:0;background:transparent;color:#fff;font-size:12px;padding:4px 0;cursor:pointer}
+.car-new{display:flex;flex-direction:column;gap:6px;padding:10px;border:1px dashed rgba(0,0,0,.25);border-radius:12px;margin-top:6px}
+.car-new input,.car-new textarea{font:15px var(--font-body);padding:8px 10px;border-radius:8px;border:1px solid rgba(0,0,0,.2)}
 .sp-dots{position:absolute;left:0;right:0;bottom:10px;display:flex;justify-content:center;gap:5px;pointer-events:none}
 .sp-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.45)}.sp-dots i.on{background:#fdee6a}
 .sp-cnt{position:absolute;right:10px;top:10px;background:rgba(0,0,0,.6);color:#fff;font:600 12px var(--font-body);padding:3px 9px;border-radius:999px}
@@ -4186,10 +4201,17 @@ function renderAdmin(){const A=document.getElementById("adm");if(!A)return;
     body=`<div class="adm-card"><div class="adm-g2"><label>${L("YouTube link","YouTube लिंक")}<input id="vdUrl" placeholder="https://youtu.be/…"></label><label>${L("Title","शीर्षक")}<input id="vdTitle"></label></div><div><button type="button" class="btn" id="vdAdd"${ADM.busy?" disabled":""}>${L("Add video","वीडियो जोड़ें")}</button></div></div>
       <div class="adm-gal">${vs.length?vs.map((v,i)=>`<figure><img src="https://i.ytimg.com/vi/${esc(v.yt)}/hqdefault.jpg" alt="" style="aspect-ratio:16/9"><figcaption>${esc(v.title||"")}</figcaption><button type="button" data-vddel="${i}">${L("Remove","हटाएँ")}</button></figure>`).join(""):`<div class="adm-empty" style="grid-column:1/-1">${L("No videos yet.","अभी कोई वीडियो नहीं।")}</div>`}</div>`;}
   else if(ADM.tab==="reels"){if(RL.admin===null)rlLoad();const it=RL.admin||[];const pk=ADM.pk||"photo";
-    const kinds=[["vlog","📅 "+L("Daily vlog","डेली व्लॉग","રોજનો વ્લોગ")],["photo","📷 "+L("Darshan photos","दर्शन फ़ोटो","દર્શન ફોટા")],["vid","🎬 "+L("Video reel","वीडियो रील","વીડિયો રીલ")],["text","🪔 "+L("Vichar","विचार","વિચાર")],["link","🔗 "+L("Link","लिंक","લિંક")]];
+    const kinds=[["car","🎠 "+L("Carousel","कैरोसेल","કૅરોસેલ")],["vlog","📅 "+L("Daily vlog","डेली व्लॉग","રોજનો વ્લોગ")],["photo","📷 "+L("Darshan photos","दर्शन फ़ोटो","દર્શન ફોટા")],["vid","🎬 "+L("Video reel","वीडियो रील","વીડિયો રીલ")],["text","🪔 "+L("Vichar","विचार","વિચાર")],["link","🔗 "+L("Link","लिंक","લિંક")]];
     const VB=[["#ff8a1c","#7c1d06"],["#7b1f1f","#3b0a0a"],["#0f766e","#064e3b"],["#6d28d9","#312e81"],["#fde68a","#f59e0b"]];
     const today=new Date(Date.now()-new Date().getTimezoneOffset()*60000).toISOString().slice(0,10);
-    const field=pk==="vlog"?`<div class="adm-g2"><label>${L("Day of the vlog","व्लॉग का दिन","વ્લોગનો દિવસ")}<input type="date" id="spDay" value="${today}"></label><label>${L("Title","शीर्षक","શીર્ષક")}<input id="spTitle" maxlength="140" placeholder="${L("e.g. Morning aarti and seva at the ashram","जैसे आश्रम में सुबह की आरती और सेवा","જેમ કે આશ્રમમાં સવારની આરતી અને સેવા")}"></label></div>
+    const CS=ADM.car||(ADM.car=[]);const VBC=[["#ff8a1c","#7c1d06"],["#7b1f1f","#3b0a0a"],["#0f766e","#064e3b"],["#6d28d9","#312e81"],["#fde68a","#f59e0b"]];
+    const field=pk==="car"?`<p style="margin:0 0 8px;font-size:14px">${L("Make up to 10 slides: photos and text slides, in any order. Devotees swipe through them like an Instagram carousel.","10 तक स्लाइड बनाएँ: फ़ोटो और लिखाण वाली स्लाइड, किसी भी क्रम में। भक्त Instagram कैरोसेल की तरह स्वाइप करेंगे।","૧૦ સુધી સ્લાઇડ બનાવો: ફોટા અને લખાણવાળી સ્લાઇડ, ગમે તે ક્રમમાં. ભક્તો Instagram કૅરોસેલની જેમ સ્વાઇપ કરશે.")}</p>
+        <div class="car-ed">${CS.map((c,i)=>`<div class="car-sl">${c.t==="img"?`<img src="${c.u}" alt="">`:`<div class="car-tx vb${c.bg%5}"><b>${esc(c.h||"")}</b><span>${esc(c.x||"")}</span></div>`}<i>${num(i+1)}</i><div class="car-b"><button type="button" data-cmv="${i}:-1" aria-label="up">◀</button><button type="button" data-cmv="${i}:1" aria-label="down">▶</button><button type="button" data-cdel="${i}" aria-label="remove">✕</button></div></div>`).join("")}</div>
+        <div class="adm-bar"><label class="btn ghost" style="cursor:pointer">📷 ${L("Add photo slides","फ़ोटो स्लाइड जोड़ें","ફોટો સ્લાઇડ ઉમેરો")}<input type="file" id="carFile" accept="image/*" multiple hidden></label></div>
+        <div class="car-new"><b>✏️ ${L("Text slide","लिखाण स्लाइड","લખાણ સ્લાઇડ")}</b><input id="carH" maxlength="80" placeholder="${L("Heading","शीर्षक","મથાળું")}"><textarea id="carX" rows="3" maxlength="400" placeholder="${L("Words of the slide","स्लाइड के शब्द","સ્લાઇડના શબ્દો")}"></textarea>
+          <div class="adm-vb" role="group">${VBC.map((c,i)=>`<button type="button" data-cbg="${i}" aria-pressed="${(ADM.cbg||0)===i}" style="background:linear-gradient(135deg,${c[0]},${c[1]})" aria-label="${i+1}"></button>`).join("")}</div>
+          <button type="button" class="btn ghost" id="carAddT">+ ${L("Add text slide","लिखाण स्लाइड जोड़ें","લખાણ સ્લાઇડ ઉમેરો")}</button></div>`
+      :pk==="vlog"?`<div class="adm-g2"><label>${L("Day of the vlog","व्लॉग का दिन","વ્લોગનો દિવસ")}<input type="date" id="spDay" value="${today}"></label><label>${L("Title","शीर्षक","શીર્ષક")}<input id="spTitle" maxlength="140" placeholder="${L("e.g. Morning aarti and seva at the ashram","जैसे आश्रम में सुबह की आरती और सेवा","જેમ કે આશ્રમમાં સવારની આરતી અને સેવા")}"></label></div>
         <label>${L("YouTube link of the vlog (any length)","व्लॉग की YouTube लिंक (कितना भी लंबा)","વ્લોગની YouTube લિંક (ગમે તેટલો લાંબો)")}<input id="spUrl" inputmode="url" placeholder="https://youtu.be/…"></label>
         <p style="margin:6px 0;font-size:14px">${L("or a short video from the phone (up to 90 seconds):","या फ़ोन से छोटा वीडियो (90 सेकंड तक):","અથવા ફોનમાંથી નાનો વીડિયો (૯૦ સેકન્ડ સુધી):")}</p>
         <label class="btn ghost" style="cursor:pointer;display:inline-block">${L("Choose a video","वीडियो चुनें","વીડિયો પસંદ કરો")}<input type="file" id="spFile" accept="video/*" hidden></label> <span id="spPick" style="font-size:14px"></span><div class="adm-prog" id="spProg" hidden><i></i></div>
@@ -4206,7 +4228,7 @@ function renderAdmin(){const A=document.getElementById("adm");if(!A)return;
       ${field}
       ${pk==="text"?"":`<label style="margin-top:10px">${pk==="vlog"?L("About this day (optional)","इस दिन के बारे में (वैकल्पिक)","આ દિવસ વિશે (મરજિયાત)"):L("Caption (optional)","कैप्शन (वैकल्पिक)","કૅપ્શન (મરજિયાત)")}<textarea id="spCap" rows="2" maxlength="1500" placeholder="${L("e.g. Shringar darshan, Kartik sud 9","जैसे श्रृंगार दर्शन","જેમ કે શૃંગાર દર્શન, કારતક સુદ ૯")}"></textarea></label>`}
       <div class="adm-bar"><button type="button" class="btn" id="spPost"${ADM.busy?" disabled":""}>${L("Post","पोस्ट करें","પોસ્ટ કરો")}</button><a class="btn ghost" href="#reels">${L("See the Satsang page","सत्संग पेज देखें","સત્સંગ પેજ જુઓ")}</a></div></div>
-    <div class="adm-gal">${it.length?it.map(x=>`<figure><div class="adm-reel-th">${x.kind==="photo"?`<img src="${esc(blobU(ssImgs(x)[0]||""))}" alt="" loading="lazy">`:x.kind==="vid"&&x.poster?`<img src="${esc(x.poster)}" alt="">`:x.kind==="yt"?`<img src="https://i.ytimg.com/vi/${esc(x.yt)}/hqdefault.jpg" alt="">`:x.kind==="text"?`<div style="padding:10px;font-size:13px;line-height:1.4">${esc((x.txt||"").slice(0,90))}</div>`:"▶ "+esc(rlKindName(x.kind))}</div><figcaption>${esc(rlDay(x.at))}${x.jai?" · 🙏 "+num(x.jai):""}${x.cap?" · "+esc(x.cap.slice(0,60)):""}</figcaption><button type="button" data-rldel="${esc(x.id)}">${ADM.sure===("rl:"+x.id)?L("Tap again to remove","हटाने के लिए फिर दबाएँ","દૂર કરવા ફરી દબાવો"):L("Remove","हटाएँ","દૂર કરો")}</button></figure>`).join(""):`<div class="adm-empty" style="grid-column:1/-1">${RL.admin===null?L("Loading…","लोड हो रहा है…","લોડ થઈ રહ્યું છે…"):L("No posts yet. Make the first post.","अभी कोई पोस्ट नहीं। पहली पोस्ट करें।","હજુ કોઈ પોસ્ટ નથી. પહેલી પોસ્ટ કરો.")}</div>`}</div>`;}
+    <div class="adm-gal">${it.length?it.map(x=>`<figure><div class="adm-reel-th">${x.kind==="car"?(x.thumb?`<img src="${esc(x.thumb)}" alt="">`:"🎠"):x.kind==="photo"?`<img src="${esc(blobU(ssImgs(x)[0]||""))}" alt="" loading="lazy">`:x.kind==="vid"&&x.poster?`<img src="${esc(x.poster)}" alt="">`:x.kind==="yt"?`<img src="https://i.ytimg.com/vi/${esc(x.yt)}/hqdefault.jpg" alt="">`:x.kind==="text"?`<div style="padding:10px;font-size:13px;line-height:1.4">${esc((x.txt||"").slice(0,90))}</div>`:"▶ "+esc(rlKindName(x.kind))}</div><figcaption>${esc(rlDay(x.at))}${x.jai?" · 🙏 "+num(x.jai):""}${x.cap?" · "+esc(x.cap.slice(0,60)):""}</figcaption><button type="button" data-rldel="${esc(x.id)}">${ADM.sure===("rl:"+x.id)?L("Tap again to remove","हटाने के लिए फिर दबाएँ","દૂર કરવા ફરી દબાવો"):L("Remove","हटाएँ","દૂર કરો")}</button></figure>`).join(""):`<div class="adm-empty" style="grid-column:1/-1">${RL.admin===null?L("Loading…","लोड हो रहा है…","લોડ થઈ રહ્યું છે…"):L("No posts yet. Make the first post.","अभी कोई पोस्ट नहीं। पहली पोस्ट करें।","હજુ કોઈ પોસ્ટ નથી. પહેલી પોસ્ટ કરો.")}</div>`}</div>`;}
   else {const g=ADM.gal,key=g.k+"-"+g.id,doc=GAL.docs[key]||{},sub=g.k==="t"?g.sub:"proof",ph=doc[sub]||[];
     const page=g.k==="t"?"#tirth-"+g.id:g.k==="s"?"#seva-"+g.id:"#yagna-"+g.id;
     body=`<div class="adm-card"><p>${L("Photos you upload here appear on that page of the website for devotees, in the 3D photo ring.","यहाँ डाली गई फ़ोटो वेबसाइट के उसी पेज पर भक्तों को 3D फ़ोटो रिंग में दिखेंगी।")}</p>
@@ -4321,6 +4343,10 @@ function admMembers(db){try{const col=db.collection("members");(ADM.fb?col.order
       const q=x=>'"'+String(x==null?"":x).replace(/"/g,'""')+'"';
       const csv="﻿"+cols.join(",")+"\n"+ADM.list.map(b=>cols.map(c=>c==="created"?q(new Date(b.created||0).toISOString().slice(0,10)):c==="type"?q(L(...(BTYPES[b.type]||BTYPES.other))):c==="status"?q(L(...(BST[b.status]||BST.new))):q(b[c])).join(",")).join("\n");
       try{await ADM.dl.save({filename:"bookings-"+new Date().toISOString().slice(0,10)+".csv",data:csv});}catch(err){}return;}
+    if(t.dataset.cbg!==undefined){ADM.cbg=+t.dataset.cbg;document.querySelectorAll("[data-cbg]").forEach(b=>b.setAttribute("aria-pressed",String(b===t)));return;}
+    if(t.id==="carAddT"){const h=document.getElementById("carH").value.trim(),x=document.getElementById("carX").value.trim();if(!h&&!x){admSay(L("Write the heading or words.","शीर्षक या शब्द लिखें।","મથાળું કે શબ્દો લખો."),true);return;}const CS=ADM.car||(ADM.car=[]);if(CS.length>=10){admSay(L("Up to 10 slides.","10 स्लाइड तक।","૧૦ સ્લાઇડ સુધી."),true);return;}CS.push({t:"txt",h,x,bg:ADM.cbg||0});admSay("");renderAdmin();return;}
+    if(t.dataset.cmv){const [i,d]=t.dataset.cmv.split(":").map(Number);const CS=ADM.car||[];const j=i+d;if(j<0||j>=CS.length)return;[CS[i],CS[j]]=[CS[j],CS[i]];renderAdmin();return;}
+    if(t.dataset.cdel!==undefined){(ADM.car||[]).splice(+t.dataset.cdel,1);renderAdmin();return;}
     if(t.dataset.sppk){ADM.pk=t.dataset.sppk;admSay("");renderAdmin();return;}
     if(t.dataset.spbg!==undefined){ADM.bg=+t.dataset.spbg;document.querySelectorAll("[data-spbg]").forEach(b=>b.setAttribute("aria-pressed",String(b===t)));return;}
     if(t.id==="spPost"){const pk=ADM.pk||"photo";const capEl=document.getElementById("spCap");const cap=capEl?capEl.value.trim():"";const id="p"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);const at=Date.now();
@@ -4328,6 +4354,10 @@ function admMembers(db){try{const col=db.collection("members");(ADM.fb?col.order
         extra={vlog:1,vday,title};const hasUrl=document.getElementById("spUrl").value.trim();const hasFile=(document.getElementById("spFile").files||[]).length;if(!hasUrl&&!hasFile){admSay(L("Paste the YouTube link or choose a video.","YouTube लिंक डालें या वीडियो चुनें।","YouTube લિંક મૂકો કે વીડિયો પસંદ કરો."),true);return;}pk2=hasUrl?"link":"vid";}
       const save=async doc=>{await ADM.db.doc("reels/"+id).set({...doc,...extra,cap,at,jai:0});};const done=m=>{ADM.busy=false;admSay(m);renderAdmin();};
       try{
+      if(pk==="car"){const CS=ADM.car||[];if(CS.length<2){admSay(L("Add at least 2 slides.","कम से कम 2 स्लाइड जोड़ें।","ઓછામાં ઓછી ૨ સ્લાઇડ ઉમેરો."),true);return;}
+        ADM.busy=true;t.disabled=true;const slides=[];let k=0;
+        for(const [i,c] of CS.entries()){if(c.t==="img"){admSay(L(`Uploading slide ${i+1} of ${CS.length}…`,`${num(i+1)}/${num(CS.length)} स्लाइड अपलोड…`,`${num(i+1)}/${num(CS.length)} સ્લાઇડ અપલોડ…`));await ADM.db.doc(`reelbin/${id}_s${k}`).set({d:c.u});slides.push({t:"img",k});k++;}else slides.push({t:"txt",h:c.h||"",x:c.x||"",bg:c.bg||0});}
+        const first=CS.find(c=>c.t==="img");await save({kind:"car",slides,n:k,thumb:first?first.th:""});ADM.car=[];done(L("Carousel posted to Satsang.","कैरोसेल सत्संग पर पोस्ट हुआ।","કૅરોસેલ સત્સંગ પર પોસ્ટ થયું."));return;}
       if(pk==="photo"){const files=[...(document.getElementById("spFile").files||[])].slice(0,6);if(!files.length){admSay(L("Choose photos first.","पहले फ़ोटो चुनें।","પહેલાં ફોટા પસંદ કરો."),true);return;}
         ADM.busy=true;t.disabled=true;const per=Math.floor((ADM.fb?880000:170000)/files.length);const imgs=[];
         for(const [i,f] of files.entries()){admSay(L(`Preparing photo ${i+1} of ${files.length}…`,`${num(i+1)}/${num(files.length)} फ़ोटो तैयार हो रही है…`,`${num(i+1)}/${num(files.length)} ફોટો તૈયાર થઈ રહ્યો છે…`));imgs.push(await rlImg(f,per));}
@@ -4347,7 +4377,7 @@ function admMembers(db){try{const col=db.collection("members");(ADM.fb?col.order
       }catch(err){console.log("[post]",err);ADM.busy=false;admSay(L("Could not post. Check the internet and try again.","पोस्ट नहीं हुई। इंटरनेट देखकर फिर कोशिश करें।","પોસ્ટ ન થઈ. ઇન્ટરનેટ તપાસી ફરી પ્રયત્ન કરો."),true);renderAdmin();}
       return;}
     if(t.dataset.rldel!==undefined){const id=t.dataset.rldel;if(ADM.sure!=="rl:"+id){ADM.sure="rl:"+id;renderAdmin();setTimeout(()=>{if(ADM.sure==="rl:"+id){ADM.sure=null;renderAdmin();}},4000);return;}
-      ADM.sure=null;try{const x=(RL.admin||[]).find(y=>y.id===id);if(x&&x.kind==="vid")for(let i=0;i<(x.n||0);i++)ADM.db.doc(`reelbin/${id}_${i}`).delete().catch(()=>{});await ADM.db.doc("reels/"+id).delete();admSay(L("Removed.","हटा दिया।","દૂર કર્યું."));}catch(err){admSay(L("Could not remove.","हटा नहीं सके।","દૂર ન થયું."),true);}return;}
+      ADM.sure=null;try{const x=(RL.admin||[]).find(y=>y.id===id);if(x&&x.kind==="vid")for(let i=0;i<(x.n||0);i++)ADM.db.doc(`reelbin/${id}_${i}`).delete().catch(()=>{});if(x&&x.kind==="car")for(let i=0;i<(x.n||0);i++)ADM.db.doc(`reelbin/${id}_s${i}`).delete().catch(()=>{});await ADM.db.doc("reels/"+id).delete();admSay(L("Removed.","हटा दिया।","દૂર કર્યું."));}catch(err){admSay(L("Could not remove.","हटा नहीं सके।","દૂર ન થયું."),true);}return;}
     if(t.id==="gUp"){const files=[...(document.getElementById("gFile").files||[])];if(!files.length){admSay(L("Choose photos first.","पहले फ़ोटो चुनें।"),true);return;}if(!ADM.assets){admSay(L("Uploading is not available here.","यहाँ अपलोड उपलब्ध नहीं है।"),true);return;}
       const g=ADM.gal,key=g.k+"-"+g.id,sub=g.k==="t"?g.sub:"proof",cap=document.getElementById("gCap").value.trim();ADM.busy=true;renderAdmin();const added=[];
       for(const [i,f] of files.entries()){admSay(L(`Uploading ${i+1} of ${files.length}…`,`${num(i+1)}/${num(files.length)} अपलोड हो रही है…`,`${num(i+1)}/${num(files.length)} અપલોડ થઈ રહ્યા છે…`));try{const r=await ADM.assets.upload(await shrink(f));added.push({id:r.id,cap,at:Date.now()});}catch(err){}}
@@ -4357,6 +4387,9 @@ function admMembers(db){try{const col=db.collection("members");(ADM.fb?col.order
     if(t.dataset.gdel!==undefined){const g=ADM.gal,key=g.k+"-"+g.id,sub=g.k==="t"?g.sub:"proof";const doc={...(GAL.docs[key]||{})};const arr=[...(doc[sub]||[])];const [gone]=arr.splice(+t.dataset.gdel,1);doc[sub]=arr;
       try{await ADM.db.doc("gallery/"+key).set(doc);if(gone&&ADM.assets)ADM.assets.delete(gone.id).catch(()=>{});admSay(L("Photo removed.","फ़ोटो हटा दी।"));}catch(err){admSay(L("Could not remove.","हटा नहीं सके।"),true);}return;}
   });
+  A.addEventListener("change",async e=>{if(e.target.id!=="carFile")return;const files=[...e.target.files];const CS=ADM.car||(ADM.car=[]);
+    for(const [i,f] of files.entries()){if(CS.length>=10)break;admSay(L(`Preparing photo ${i+1} of ${files.length}…`,`${num(i+1)}/${num(files.length)} फ़ोटो तैयार…`,`${num(i+1)}/${num(files.length)} ફોટો તૈયાર…`));try{const u=await rlImg(f,ADM.fb?650000:170000);const th=await new Promise(ok=>{const im=new Image();im.onload=()=>{const c=document.createElement("canvas");const k=Math.min(1,320/Math.max(im.width,im.height));c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);ok(c.toDataURL("image/jpeg",.6));};im.onerror=()=>ok("");im.src=u;});CS.push({t:"img",u,th});}catch(err){}}
+    admSay("");renderAdmin();});
   A.addEventListener("change",e=>{if(e.target.id==="spFile"){const n=e.target.files.length,el=document.getElementById("spPick");if(el)el.textContent=n?(n>1?L(`${n} photos chosen`,`${num(n)} फ़ोटो चुनी`,`${num(n)} ફોટા પસંદ કર્યા`):e.target.files[0].name):"";}});
   A.addEventListener("change",async e=>{const inp=e.target.closest("[data-mupload]");if(!inp||!inp.files[0])return;const f=inp.files[0],i=+inp.dataset.mupload;
     if(ADM.fb||!ADM.assets){admSay(L("On the live site, paste a YouTube or MP3 link instead of uploading a file.","लाइव साइट पर फ़ाइल की जगह YouTube या MP3 लिंक डालें।","લાઇવ સાઇટ પર ફાઇલને બદલે YouTube કે MP3 લિંક નાખો."),true);return;}
@@ -4930,16 +4963,17 @@ async function makeStory(kind){try{await document.fonts.ready;}catch(e){}
     let y=title(L("Murti daan","मूर्ति दान"),1360,100);sub(L("Shiv Parivar · Amba Ma · Mataji. Help bring them to the mandir.","शिव परिवार · अंबा माँ · माताजी — मंदिर तक लाने में सहयोग दें।"),y+4);name="murti-daan";}
   else if(k==="yatra"){stBg(c,W,H,"#080a1e","#141a44","#2a3a7a");await stFrame(c,W,H,hash);const svg=document.getElementById("yaMap");const art=svg?await stArt(`<svg viewBox="0 0 600 640">${svg.innerHTML.replace(/<animate[^>]*>|<animateMotion[^>]*\/>/g,"")}</svg>`):null;if(art)c.drawImage(art,140,470,800,853);
     let y=title(L("Sanatan Jan Jagrut Sankalp Yatra","सनातन जन जागृत संकल्प यात्रा"),1390,78);sub(L("Led by Jagatguru Mama Sarkar","जगतगुरु मामा सरकार के नेतृत्व में"),y+4,"#fdee6a");name="sankalp-yatra";}
-  else if(k.startsWith("post:")){const id=k.slice(5);const x=ssAll().find(y=>y.id===id)||{};hash=x.kind==="ytlong"||(x.vlog&&x.kind==="yt")?"watch-"+x.yt:"post-"+id;
+  else if(k.startsWith("post:")){const id=k.slice(5);let x=ssAll().find(y=>y.id===id)||{};hash=x.kind==="ytlong"||(x.vlog&&x.kind==="yt")?"watch-"+x.yt:"post-"+id;
     stBg(c,W,H,"#160604","#3e1206","#7a260c");await stFrame(c,W,H,hash);
     const head=x.vlog?"📅 "+L("Jagatguru Daily Vlog","जगतगुरु डेली व्लॉग","જગતગુરુ રોજનો વ્લોગ")+(x.vday?" · "+new Date(x.vday+"T12:00:00").toLocaleDateString(LOC(),{day:"numeric",month:"long"}):""):x.kind==="text"?"🪔 "+L("Vichar of the day","आज का विचार","આજનો વિચાર"):x.src==="yt"?(x.short?"▶ Shorts":"▶ YouTube"):"🔱 "+L("Shree Mamadev Satsang","श्री मामादेव सत्संग","શ્રી મામાદેવ સત્સંગ");
     c.fillStyle="#fdee6a";c.font=stFont(700,40);c.textAlign="center";c.fillText(head,W/2,500);
+    if(x.kind==="car"&&!(x.slides||[]).some(s=>s.t==="img")){const s=(x.slides||[])[0]||{};x={...x,kind:"text",txt:[s.h,s.x].filter(Boolean).join("\n"),bg:s.bg};}
     if(x.kind==="text"){const cols=[["#ff8a1c","#7c1d06"],["#7b1f1f","#3b0a0a"],["#0f766e","#064e3b"],["#6d28d9","#312e81"],["#fde68a","#f59e0b"]][(+x.bg||0)%5];
       const g=c.createLinearGradient(100,560,980,1500);g.addColorStop(0,cols[0]);g.addColorStop(1,cols[1]);stRR(c,90,560,900,940,48);c.fillStyle=g;c.fill();
       c.fillStyle=(+x.bg||0)%5===4?"#5a1d08":"#fff";c.font="700 160px serif";c.globalAlpha=.25;c.fillText("❝",220,740);c.globalAlpha=1;
       const lines=String(x.txt||"").length;const sz=lines>220?44:lines>120?54:66;c.font=stFont(700,sz,true);const est=Math.min(9,Math.ceil(c.measureText(x.txt||"").width/700));const y=stWrap(c,x.txt||"",W/2,Math.max(800,1030-est*sz*1.45/2-(x.by?40:0)),760,sz*1.45,9);
       if(x.by){c.font=stFont(600,40);c.fillText("— "+x.by,W/2,Math.min(y+40,1440));}}
-    else{const src=x.kind==="photo"?blobU(ssImgs(x)[0]):x.kind==="vid"?x.poster:(x.kind==="yt"||x.kind==="ytlong")?`https://i.ytimg.com/vi/${x.yt}/${x.kind==="ytlong"||x.vlog?"hq720":"hqdefault"}.jpg`:x.img||"img/darshan-mamadev.jpg";
+    else{const src=x.kind==="car"?(CARI[x.id+"_s0"]||x.thumb):x.kind==="photo"?blobU(ssImgs(x)[0]):x.kind==="vid"?x.poster:(x.kind==="yt"||x.kind==="ytlong")?`https://i.ytimg.com/vi/${x.yt}/${x.kind==="ytlong"||x.vlog?"hq720":"hqdefault"}.jpg`:x.img||"img/darshan-mamadev.jpg";
       let img=await stLoad(src);if(!img&&x.yt)img=await stLoad(`https://i.ytimg.com/vi/${x.yt}/hqdefault.jpg`);if(!img)img=await stLoad("img/darshan-mamadev.jpg");
       const wide=x.kind==="ytlong"||(x.vlog&&x.kind==="yt");const aw=wide?920:720,ah=wide?Math.round(920*9/16):900,ax=(W-aw)/2,ay=wide?640:560;
       c.save();stRR(c,ax,ay,aw,ah,40);c.clip();if(img){const sc=Math.max(aw/img.width,ah/img.height);c.drawImage(img,W/2-img.width*sc/2,ay+ah/2-img.height*sc/2,img.width*sc,img.height*sc);}c.restore();
@@ -5135,7 +5169,7 @@ function ssAll(){const own=(RL.admin||[]).map(x=>({...x,src:"own"}));
   const is=(YT.ig||[]).map(p=>({id:"i-"+p.id,kind:"ig",ig:p.id,cap:p.t,at:Date.parse(p.at)||0,img:p.img||"",likes:p.likes||0,reel:p.reel,src:"ig"}));
   return [...own,...ys,...is].sort((a,b)=>(b.at||0)-(a.at||0));}
 const ssImgs=x=>x.imgs&&x.imgs.length?x.imgs:x.img?[x.img]:[];
-function ssThumb(x){if(x.kind==="photo")return blobU(ssImgs(x)[0]);if(x.kind==="vid")return x.poster||"";if(x.kind==="yt"||x.kind==="ytlong")return ytThumb(x.yt);if(x.img)return x.img;return "img/darshan-mamadev.jpg";}
+function ssThumb(x){if(x.kind==="car")return CARI[x.id+"_0"]||x.thumb||"img/darshan-mamadev.jpg";if(x.kind==="photo")return blobU(ssImgs(x)[0]);if(x.kind==="vid")return x.poster||"";if(x.kind==="yt"||x.kind==="ytlong")return ytThumb(x.yt);if(x.img)return x.img;return "img/darshan-mamadev.jpg";}
 const ssHref=x=>x.kind==="ytlong"||(x.vlog&&x.kind==="yt")?"#watch-"+x.yt:x.kind==="text"?"#post-"+encodeURIComponent(x.id):"#reels-"+encodeURIComponent(x.id);
 const ssShareUrl=x=>location.origin+location.pathname+(x.kind==="ytlong"?"#watch-"+x.yt:"#post-"+encodeURIComponent(x.id));
 function ssJaiN(x){return (x.jai||0);}
@@ -5143,7 +5177,8 @@ function ssCard(x,hl){const liked=RL.liked[x.id];let who,src="",media="";
   if(x.src==="yt"){const c=ytCh(x.ch);who=`<img class="av" src="${ytAv(c)}" alt=""><div><b>${esc(c.name)}</b><span>${ytAgo(x.at)} · ${ytViews(x.views)}</span></div>`;src=`<span class="src">${SS_YT}${x.short?"Shorts":"YouTube"}</span>`;}
   else if(x.src==="ig"){who=`<div class="av" style="display:grid;place-items:center">${IG_ICON}</div><div><b>@${IG_USER}</b><span>${ytAgo(x.at)}</span></div>`;src=`<span class="src">Instagram</span>`;}
   else{who=`<img class="av" src="${SS_TRUST.av}" alt=""><div><b>${L("Shree Mamadev Trust","श्री मामादेव ट्रस्ट","શ્રી મામાદેવ ટ્રસ્ટ")}</b><span>${ytAgo(x.at)}</span></div>`;src=`<span class="src">${x.vlog?"📅 "+L("Daily vlog","डेली व्लॉग","રોજનો વ્લોગ"):"🔱 "+(x.kind==="text"?L("Vichar","विचार","વિચાર"):x.kind==="vid"?L("Reel","रील","રીલ"):x.kind==="photo"?L("Darshan","दर्शन","દર્શન"):rlKindName(x.kind))}</span>`;}
-  if(x.vlog&&x.kind==="yt")media=`<a class="sp-v wide" href="#watch-${esc(x.yt)}"><img src="${ytBig(x.yt)}" onerror="this.onerror=null;this.src='${ytThumb(x.yt)}'" alt="" loading="lazy"><span class="sp-play">▶</span><span class="sp-tag">📅 ${esc(x.vday||"")}</span></a>`;
+  if(x.kind==="car"){const sl=x.slides||[];media=`<div class="sp-m"><div class="sp-car" data-car data-carid="${esc(x.id)}">${sl.map(s=>s.t==="img"?`<div class="car-ph" data-ck="${esc(x.id)}_s${s.k}">${CARI[x.id+"_s"+s.k]?`<img src="${CARI[x.id+"_s"+s.k]}" alt="">`:(s.k===0&&x.thumb?`<img src="${esc(x.thumb)}" alt="" class="blur">`:"")}</div>`:`<div class="car-txs vb${(+s.bg||0)%5}"><div>${s.h?`<b>${esc(s.h)}</b>`:""}${s.x?`<p>${esc(s.x)}</p>`:""}</div></div>`).join("")}</div>${sl.length>1?`<span class="sp-cnt">${num(1)}/${num(sl.length)}</span><div class="sp-dots">${sl.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div><button type="button" class="car-nav p" data-cnav="-1" aria-label="previous">‹</button><button type="button" class="car-nav n" data-cnav="1" aria-label="next">›</button>`:""}</div>`;}
+  else if(x.vlog&&x.kind==="yt")media=`<a class="sp-v wide" href="#watch-${esc(x.yt)}"><img src="${ytBig(x.yt)}" onerror="this.onerror=null;this.src='${ytThumb(x.yt)}'" alt="" loading="lazy"><span class="sp-play">▶</span><span class="sp-tag">📅 ${esc(x.vday||"")}</span></a>`;
   else if(x.kind==="photo"){const im=ssImgs(x);media=`<div class="sp-m"><div class="sp-car" data-car>${im.map((u,i)=>`<img src="${esc(blobU(u))}" alt="${esc(x.cap||"")}" loading="${i?"lazy":"eager"}">`).join("")}</div>${im.length>1?`<span class="sp-cnt">${num(1)}/${num(im.length)}</span><div class="sp-dots">${im.map((_,i)=>`<i class="${i?"":"on"}"></i>`).join("")}</div>`:""}</div>`;}
   else if(x.kind==="vid")media=`<div class="sp-m"><div class="sp-v" data-spv="${esc(x.id)}" role="button" tabindex="0" aria-label="${L("Play","चलाएँ","ચલાવો")}"><img src="${esc(x.poster||"")}" alt=""><video playsinline loop muted preload="none" poster="${esc(x.poster||"")}"></video><span class="sp-play">▶</span></div><button type="button" class="sp-snd" data-spsnd aria-label="${L("Sound","आवाज़","અવાજ")}">🔇</button></div>`;
   else if(x.kind==="text")media=`<div class="sp-vichar vb${(+x.bg||0)%5}"><div><p>${esc(x.txt||"")}</p>${x.by?`<small>— ${esc(x.by)}</small>`:""}</div></div>`;
@@ -5178,7 +5213,7 @@ function ytRender(){const H=document.getElementById("ytHome");if(!H||H.hidden&&!
     body=`<div class="ss-wrap"><div class="ss-feed">${vlNew&&!pin?`<a class="vl-today" href="${vl.href}"><img src="${esc(vl.thumb||"")}" alt=""><div><small>📅 ${L("Today's vlog","आज का व्लॉग","આજનો વ્લોગ")} · ${L("Day","दिन","દિવસ")} ${num(vl.n)}</small><b>${esc(vl.t)}</b></div><span class="sp-play">▶</span></a>`:""}${list.slice(0,SS.more||40).map(x=>ssCard(x,x.id===pin)).join("")}${list.length>(SS.more||40)?`<button type="button" class="pill line" data-ssmore style="align-self:center">${L("Show more","और देखें","વધુ જુઓ")}</button>`:""}</div>
       <aside class="ss-side"><h3>${L("Latest videos","नए वीडियो","નવા વીડિયો")}</h3>${long.slice(0,6).map(x=>`<a class="yt-nx" href="#watch-${esc(x.yt)}"><div class="th"><img src="${ytThumb(x.yt)}" alt="" loading="lazy"></div><div><b>${esc(x.cap)}</b><span>${ytViews(x.views)} · ${ytAgo(x.at)}</span></div></a>`).join("")}</aside></div>`;}
   if(!loading&&!body)body=`<div class="yt-empty">${L("Nothing here yet. Jai Shri Mamadev 🙏","अभी यहाँ कुछ नहीं है। जय श्री मामादेव 🙏","હજુ અહીં કંઈ નથી. જય શ્રી મામાદેવ 🙏")}</div>`;
-  const today=own.filter(x=>x.kind!=="text"&&Date.now()-(x.at||0)<3*86400000).concat(reels.filter(x=>x.auto).slice(0,8)).slice(0,14);
+  const today=own.filter(x=>x.kind!=="text"&&x.kind!=="car"&&Date.now()-(x.at||0)<3*86400000).concat(reels.filter(x=>x.auto).slice(0,8)).slice(0,14);
   const sc=H.querySelector(".ss-tabs")?.scrollLeft||0;const sd=H.querySelector(".ss-diyas")?.scrollLeft||0;
   H.innerHTML=`<div class="ss-mast"><div class="ss-ring"><img src="img/jagatguru-chhatra.webp" alt=""></div>
       <div><h1>${L("Shree Mamadev Satsang","श्री मामादेव सत्संग","શ્રી મામાદેવ સત્સંગ")}</h1><p>${L("Daily darshan, reels, vichar and videos of JagatGuru MamaSarkar, all in one place.","जगतगुरु मामा सरकार के रोज़ के दर्शन, रील्स, विचार और वीडियो, सब एक जगह।","જગતગુરુ મામા સરકારના રોજના દર્શન, રીલ્સ, વિચાર અને વીડિયો, બધું એક જ જગ્યાએ.")}</p>
@@ -5189,7 +5224,11 @@ function ytRender(){const H=document.getElementById("ytHome");if(!H||H.hidden&&!
   const tb=H.querySelector(".ss-tabs");if(tb)tb.scrollLeft=sc;const dy=H.querySelector(".ss-diyas");if(dy)dy.scrollLeft=sd;
   ssObserve();if(pin&&!SS.pinned){SS.pinned=pin;requestAnimationFrame(()=>document.getElementById("sp-"+pin)?.scrollIntoView({block:"center"}));}}
 /* own video posts play by themselves (muted) when they are mostly on screen */
-function ssObserve(){if(SS.io)SS.io.disconnect();SS.io=new IntersectionObserver(es=>{es.forEach(e=>{const b=e.target,v=b.querySelector("video");const x=(RL.admin||[]).find(y=>y.id===b.dataset.spv);if(!x)return;
+/* carousel slide photos are kept in the database; they load when the post comes on screen */
+const CARI={};async function carLoad(el){const ids=[...el.querySelectorAll("[data-ck]")].map(d=>d.dataset.ck).filter(k=>!CARI[k]);if(!ids.length)return;const db=await pubDB();if(!db)return;
+  await Promise.all(ids.map(async k=>{try{const g=await db.doc("reelbin/"+k).get();const u=(g.data()||{}).d;if(u){CARI[k]=u;el.querySelectorAll(`[data-ck="${k}"]`).forEach(d=>{d.innerHTML=`<img src="${u}" alt="">`;});}}catch(e){}}));}
+function ssObserve(){if(SS.cio)SS.cio.disconnect();SS.cio=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){SS.cio.unobserve(e.target);carLoad(e.target);}}),{rootMargin:"300px"});document.querySelectorAll("#ytHome [data-carid]").forEach(c=>SS.cio.observe(c));
+  if(SS.io)SS.io.disconnect();SS.io=new IntersectionObserver(es=>{es.forEach(e=>{const b=e.target,v=b.querySelector("video");const x=(RL.admin||[]).find(y=>y.id===b.dataset.spv);if(!x)return;
     if(e.isIntersecting&&e.intersectionRatio>=.7){b._t=setTimeout(async()=>{const u=await vidURL(x);if(!u)return;if(v.getAttribute("src")!==u)v.src=u;v.play().then(()=>b.classList.add("playing")).catch(()=>{});},350);}
     else{clearTimeout(b._t);if(!v.paused)v.pause();b.classList.remove("playing");}});},{threshold:[0,.7]});
   document.querySelectorAll("#ytHome [data-spv]").forEach(b=>SS.io.observe(b));}
@@ -5216,6 +5255,7 @@ function ytRoute(){const H=document.getElementById("ytHome"),W=document.getEleme
   V.addEventListener("click",async e=>{const fb=e.target.closest("[data-ytf]");if(fb){YT.f=fb.dataset.ytf;ytRender();return;}
     const tb=e.target.closest("[data-sst]");if(tb){SS.tab=tb.dataset.sst;SS.more=0;ytRender();return;}
     if(e.target.closest("[data-ssmore]")){SS.more=(SS.more||40)+40;ytRender();return;}
+    const cn=e.target.closest("[data-cnav]");if(cn){const c=cn.parentElement.querySelector("[data-car]");c.scrollBy({left:c.clientWidth*(+cn.dataset.cnav),behavior:"smooth"});return;}
     const card=e.target.closest("[data-sp]");const x=card&&ssAll().find(y=>y.id===card.dataset.sp);
     if(x&&e.target.closest("[data-spjai]")){const b=e.target.closest("[data-spjai]");if(!RL.liked[x.id]){b.classList.add("on","pop");const sp=b.querySelector("span");if(x.src==="own"){if(sp)sp.textContent=num((x.jai||0)+1);else b.insertAdjacentHTML("beforeend",` <span>${num((x.jai||0)+1)}</span>`);}ssJai(x);}return;}
     if(x&&e.target.closest("[data-spshare]")){const url=ssShareUrl(x);const text=(x.kind==="text"?x.txt:x.cap||"")+"\n"+L("Shree Mamadev Satsang","श्री मामादेव सत्संग","શ્રી મામાદેવ સત્સંગ");
@@ -5242,7 +5282,7 @@ function rlSrc(it){
   if(it.kind==="gd")return `https://drive.google.com/file/d/${it.gd}/preview`;
   if(it.kind==="fb")return `https://www.facebook.com/plugins/video.php?href=${encodeURIComponent(it.url)}&show_text=false&autoplay=true&mute=true`;
   return "";}
-const rlKindName=k=>({yt:"YouTube",ig:"Instagram",fb:"Facebook",gd:"Google Drive",mp4:L("Video","वीडियो","વીડિયો")})[k]||"";
+const rlKindName=k=>({yt:"YouTube",ig:"Instagram",fb:"Facebook",gd:"Google Drive",mp4:L("Video","वीडियो","વીડિયો"),car:L("Carousel","कैरोसेल","કૅરોસેલ")})[k]||"";
 async function rlImg(blob,max){const bmp=await createImageBitmap(blob);const k=Math.min(1,1440/Math.max(bmp.width,bmp.height));const c=document.createElement("canvas");c.width=Math.round(bmp.width*k);c.height=Math.round(bmp.height*k);c.getContext("2d").drawImage(bmp,0,0,c.width,c.height);
   let q=.82,u=c.toDataURL("image/jpeg",q);while(u.length>max&&q>.3){q-=.08;u=c.toDataURL("image/jpeg",q);}
   if(u.length>max){const c2=document.createElement("canvas");c2.width=Math.round(c.width*.7);c2.height=Math.round(c.height*.7);c2.getContext("2d").drawImage(c,0,0,c2.width,c2.height);u=c2.toDataURL("image/jpeg",.7);}return u;}
@@ -5256,7 +5296,7 @@ async function rlLoad(){if(RL.loading)return;RL.loading=true;let db=null;
 function rlCombine(){if(RL.admin===null&&!YT.ok){RL.items=null;return;}
   const ys=(YT.videos||[]).filter(v=>v.s).map(v=>({id:"y-"+v.id,kind:"yt",yt:v.id,cap:v.t,at:Date.parse(v.at)||0,views:v.v,ch:v.ch,auto:1}));
   const is=(YT.ig||[]).map(p=>({id:"i-"+p.id,kind:"ig",ig:p.id,cap:p.t,at:Date.parse(p.at)||0,img:p.img||"",likes:p.likes||0,reel:p.reel,auto:"ig"}));
-  RL.items=[...(RL.admin||[]).filter(x=>x.kind!=="text"&&!(x.vlog&&x.kind!=="vid")),...ys,...is].sort((a,b)=>(b.at||0)-(a.at||0));rlRender();ytRender();}
+  RL.items=[...(RL.admin||[]).filter(x=>x.kind!=="text"&&x.kind!=="car"&&!(x.vlog&&x.kind!=="vid")),...ys,...is].sort((a,b)=>(b.at||0)-(a.at||0));rlRender();ytRender();}
 const rlDay=t=>{if(!t)return "";const d=new Date(t),n=new Date();const same=(a,b)=>a.toDateString()===b.toDateString();const y=new Date(n);y.setDate(n.getDate()-1);
   if(same(d,n))return L("Today","आज","આજે");if(same(d,y))return L("Yesterday","कल","ગઈકાલે");return d.toLocaleDateString(LOC(),{day:"numeric",month:"long"});};
 function rlSize(){const F=document.getElementById("rlFeed");if(!F)return;F.style.height=innerHeight+"px";}
